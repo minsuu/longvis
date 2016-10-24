@@ -5,15 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataReducer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="100" Width="600">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Name="LeftSideMenu" Width="100"/>
-            <ColumnDefinition Name="Middle" Width="*"/>
-            <ColumnDefinition Name="RightSideMenu" Width="90"/>
-        </Grid.ColumnDefinitions>
-        <Button x:Name="DoItButton" Content="Do It!" Margin="2,2,2,2" Grid.Column="2"/>
-        <TextBlock Grid.Column="1" Text="1"/>
-        <TextBlock Grid.Column="0">c</TextBlock>
-    </Grid>
+        Title="Data Reducer" Height="500" Width="600">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed"></CommandBinding>
+    </Window.CommandBindings>
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="ApplicationCommands.Open">Open</Button>
+            </ToolBar>
+        </ToolBarTray>
+        <DockPanel DockPanel.Dock="Right" Width="150">
+            <TextBlock DockPanel.Dock="Top">Table List</TextBlock>
+            <ListBox Margin="3" ItemsSource="{Binding Tables}"/>
+        </DockPanel>
+        <TextBox x:Name="LogBox" Margin="3" Text="{Binding Logger}" IsReadOnly="True"/>
+    </DockPanel>
 </Window>
