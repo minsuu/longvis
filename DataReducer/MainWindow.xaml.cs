@@ -15,7 +15,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Data.SQLite;
-using System.Threading;
 
 namespace DataReducer
 {
