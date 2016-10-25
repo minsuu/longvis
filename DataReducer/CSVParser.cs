@@ -9,9 +9,10 @@ using CsvHelper.Configuration;
 
 namespace DataReducer
 {
+    // date_time,S_1,S_2,S_3,S_4,S_5
+    /*
     public class RawData
     {
-        // date_time,S_1,S_2,S_3,S_4,S_5
         public double[] S { get; internal set; }
     }
 
@@ -29,11 +30,13 @@ namespace DataReducer
                 return r;
             });
         }
-    }
+    }*/
 
-    class CSVParser
+    public class CSVParser
     {
-        public List<RawData> raw = new List<RawData>();
+        public Dictionary<string, List<double>> raw = new Dictionary<string, List<double>>();
+        public string[] headers;
+        public int raw_len { get; set; }
 
         public CSVParser(){
         }
@@ -45,10 +48,28 @@ namespace DataReducer
             {
                 var csv = new CsvReader(textReader);
                 csv.Read();
-                var headers = csv.FieldHeaders;
+                headers = csv.FieldHeaders;
+                foreach(string s in headers)
+                {
+                    raw[s] = new List<double>();
+                }
 
-                csv.Configuration.RegisterClassMap(new RawDataMap());
-                raw = csv.GetRecords<RawData>().ToList();
+                int idx = 0;
+                while (csv.Read())
+                {
+                    foreach(string s in headers)
+                    {
+                        if(s == "date_time")
+                        {
+                            raw[s].Add(idx);
+                        }else
+                        {
+                            raw[s].Add(csv.GetField<double>(s));
+                        }
+                    }
+                    idx++;
+                }
+                raw_len = idx;
             }
         }
     }

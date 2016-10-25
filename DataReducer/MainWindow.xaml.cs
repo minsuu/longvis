@@ -25,26 +25,36 @@ namespace DataReducer
     public partial class MainWindow : Window
     {
         private MainViewModel mv;
+        private DBInterface db = new DBInterface();
         private CSVParser csvparser = new CSVParser();
+        private bool onload = false;
+
+        public void Table_reload(IAsyncResult res = null)
+        {
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                mv.Tables.Clear();
+                foreach(String t in db.tables())
+                {
+                    mv.Tables.Add(t);
+                }
+            }));
+            
+        }
 
         public MainWindow()
         {
             InitializeComponent();
             mv = DataContext as MainViewModel;
-            string app = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            if(!Directory.Exists(app + @"\LongVis"))
-            {
-                Directory.CreateDirectory(app + @"\LongVis");
-            }
-            Env.root = app + @"\LigVis\";
-            Env.dbpath = Env.root + "data.db";
+            Table_reload();
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = !onload;
         }
 
+        public delegate void d_csv_open(string path, string name);
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -54,17 +64,40 @@ namespace DataReducer
             bool? result = dlg.ShowDialog();
             if (result == true)
             {
-                Thread t = new Thread(() => csv_open(dlg.FileName));
-                t.IsBackground = true;
-                t.Start();
+                d_csv_open work = csv_open;
+                work.BeginInvoke(dlg.FileName, dlg.SafeFileName, Table_reload, null);
             }
         }
 
-        private void csv_open(string path)
+        private void csv_open(string path, string name)
         {
+            onload = true;
             mv.Log_begin("Load " + path);
             csvparser.Open(path);
             mv.Log_end();
+
+            name = name.Split('.')[0];
+            string s = db.CreateTable(name, csvparser);
+            mv.Log("Created table with " + s);
+
+            using (var timer = new System.Timers.Timer())
+            {
+                timer.Interval = 500;
+                timer.Elapsed += new System.Timers.ElapsedEventHandler((a, b) => mv.Log_update((int)(db.ins_now * 100.0 / db.ins_max)));
+                timer.Start();
+                mv.Log_begin("Inserting data", false);
+                db.insert(name, csvparser);
+                mv.Log_end();
+                timer.Stop();
+            }
+            onload = false;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
+            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
+            Table_reload();
         }
     }
 }

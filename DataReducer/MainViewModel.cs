@@ -34,12 +34,24 @@ namespace DataReducer
         Stopwatch sw = new Stopwatch();
         Timer timer = new Timer();
         private string _log_past;
-        public void Log_begin(string s)
+        public void Log(string s)
+        {
+            _log_past += s + "\n";
+            Logger = _log_past;
+        }
+
+        public void Log_begin(string s, bool t = true)
         {
             sw.Restart();
-            timer.Start();
+            if(t)
+                timer.Start();
             _log_past += s;
             Logger = _log_past;
+        }
+
+        public void Log_update(int per)
+        {
+            Logger = _log_past + " (" + per + "%)";
         }
 
         public void Log_update()

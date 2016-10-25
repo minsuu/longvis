@@ -16,3 +16,4 @@ C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\Rele
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\Release\DataReducer.csproj.GenerateResource.Cache
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\Release\DataReducer.exe
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\Release\DataReducer.pdb
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\Release\DataReducer.csprojResolveAssemblyReference.cache

@@ -20,7 +20,8 @@
         </ToolBarTray>
         <DockPanel DockPanel.Dock="Right" Width="150">
             <TextBlock DockPanel.Dock="Top">Table List</TextBlock>
-            <ListBox Margin="3" ItemsSource="{Binding Tables}"/>
+            <Button DockPanel.Dock="Bottom" Margin ="3" Content="Drop" Height="30" Click="Button_Click"/>
+            <ListBox x:Name="f_tablelist" Margin="3" ItemsSource="{Binding Tables}"/>
         </DockPanel>
         <TextBox x:Name="LogBox" Margin="3" Text="{Binding Logger}" IsReadOnly="True"/>
     </DockPanel>
