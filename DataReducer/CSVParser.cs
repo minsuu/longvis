@@ -34,8 +34,8 @@ namespace DataReducer
 
     public class CSVParser
     {
-        public Dictionary<string, List<double>> raw = new Dictionary<string, List<double>>();
-        public string[] headers;
+        public Dictionary<string, List<double>> raw { get; set; } = new Dictionary<string, List<double>>();
+        public string[] headers { get; set; }
         public int raw_len { get; set; }
 
         public CSVParser(){

@@ -7,27 +7,6 @@ using System.Threading.Tasks;
 
 namespace DataReducer
 {
-    public sealed class DataPoint
-    {
-        public string date_time { set; get; }
-        public double index { set; get; }
-        public double[] values { set; get; }
-        public List<bool> mask { set; get; }
-
-        public DataPoint(string dt, double index, double[] val)
-        {
-            this.date_time = dt;
-            this.index = index;
-            this.values = val;
-            this.mask = new List<bool>();
-        }
-
-        public override string ToString()
-        {
-            return String.Format("DataPoint({0}, {1}, {2})", date_time, index, values);
-        }
-    }
-
     public class Stripper
     {
         static double calcDb(double dx, double dy, double dtx, double dty, double r)

@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DataReducer.CSVParser">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAYAAAAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CSVParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataReducer.DBInterface">
+    <Position X="6.5" Y="0.5" Width="1.75" />
+    <Members>
+      <Property Name="ins_max" Hidden="true" />
+      <Property Name="ins_now" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAABABAAEAAAAAAQAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataReducer.Env">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <Members>
+      <Field Name="_app" Hidden="true" />
+      <Field Name="_dbpath" Hidden="true" />
+      <Field Name="_root" Hidden="true" />
+      <Method Name="Env" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAgAAAAAEAAAACAACAAAAAAAAA=</HashCode>
+      <FileName>Env.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DataReducer.MainViewModel" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="3.5" Width="1.75" />
+    <Members>
+      <Field Name="_log_past" Hidden="true" />
+      <Field Name="_Logger" Hidden="true" />
+      <Method Name="Log" Hidden="true" />
+      <Method Name="OnPropertyChanged" Hidden="true" />
+      <Event Name="PropertyChanged" Hidden="true" />
+      <Field Name="sw" Hidden="true" />
+      <Field Name="timer" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACIAAAAAIAgAQAAAgAgAAAkAAABAAAAAIAA=</HashCode>
+      <FileName>MainViewModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataReducer.MainWindow" BaseTypeListCollapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.75" />
+    <Members>
+      <Field Name="csvparser" Hidden="true" />
+      <Field Name="db" Hidden="true" />
+      <Field Name="mv" Hidden="true" />
+      <Field Name="onload" Hidden="true" />
+      <Method Name="Open_CanExecute" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Delegate Name="DataReducer.MainWindow.d_csv_open" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MainWindow.xaml.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAQAAAAAAIAAAGAAAAAAAAAAAACAgAAAII=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DataReducer.Reducer">
+    <Position X="4.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAACACACAAAAAAAAiAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reducer.cs</FileName>
+      <NewMemberFileName>Stripper.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>

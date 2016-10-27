@@ -66,6 +66,8 @@ Time Series Data를 plotting하는 데 있어서 수많은 점을 찍게되면 �
 
 ## Database Model
 
+
+
 # Goal & Requirements
 
 이번 프로젝트의 목표는 네 가지로 정리할 수 있다. 첫째, DB를 구축해서 최적화된 수행 시간을 얻을 것이다. 빅데이터를 다루다보니 DB의 사용은 필수적이며 사측 담당자와의 협의를 통해서 그것을 전제하고 들어가는 것으로 협의가 끝났다. DB 종류나 설계는 자유로우며 당연히 DB를 사용하는 이유는 더 나은 수행 시간을 위한 것이므로 여러 시도를 통해 최적화된 결과를 얻어내야만 할 것이다.     
@@ -84,17 +86,64 @@ Time Series Data를 plotting하는 데 있어서 수많은 점을 찍게되면 �
 
 ![Project architecture](arch.png){#fig:arch}
 
-Figure {@fig:arch}에서 보이듯 project 구성은 크게 두 가지 application으로 나뉘어있다. data를 읽어들여 적절한 형태로 database에 저장하는 Server Application과, 이 database를 기초로 user에게 visualization을 제공하는 Desktop application이 그것이다. 이 둘을 나누어 각각 설명하도록 한다.
+Figure {@fig:arch}에서 보이듯 project 구성은 크게 두 가지 application으로 나뉘어있다. data를 읽어들여 적절한 형태로 database에 저장하는 Server Application과, 이 database를 기초로 user에게 visualization을 제공하는 Desktop application이 그것이다. 양 측 모두 UI interaction이 필요할 뿐 dataflow 자체는 한방향으로 이루어진 단순한 구조를 띠고 있다. 이 둘을 나누어 각각 설명하도록 한다.
 
-## Server Application
+## Data Reducer
+
+Server단에서는 Sensor Data를 파싱하고, data reduction을 수행하며, 이를 database에 넣는 것까지가 그 역할에 해당한다.
 
 ### CSV Parsing Module
 
+CSV파일을 읽어 미리 정의된 형식의 data class로 저장시켜주는 module이다. 읽어들인 data는 Data Reduction Module의 input이 된다.
+
 ### Data Reduction Module
 
-### Databse Interface Module
+읽어들인 data에 대해서 각 센서별 데이터에 대해서 차후에 빠르게 visualize할 수 있도록 data reduction을 수행하는 module이다. CSV Parsing Module로부터 data를 받아서 이를 각각의 data reduction module에 넣어주고, 이를 통해서 특정 배율에서 각 point의 포함여부를 받아와 정리하게 된다. 이렇게 분석된 data는 Database Interface Module의 input이 된다.
+
+### Database Interface Module
+
+Database와의 통신을 담당하는 module로, data를 읽어들여 저장할 table의 생성부터, 분석된 data를 insert하는 역할도 맡는다. 이것을 끝으로 Server Application의 역할이 끝나게 된다.
+
+## Data Visualizer
+
+### Database Interface Module
+
+Database에서 특정 wafer(table에 해당함)와 sensor의, 특정한 영역에 해당하는 data를 읽어올 수 있도록 interface를 제공하는 module이다. 이를 통해서 application에서 database에 접근하게 된다.
+
+### Cache Controller Module
+
+Display에 표시될 내용이 담긴 cache를 관리한다. 필요할 때에는 Database Interface Module에 요청을 보내 cache를 업데이트하게 된다. 이렇게 업데이트된 data는 Data Interpolator Module을 거쳐 다듬어지고, 이후에 User Display에 업데이트된다.
+
+### Data Interpolator Module
+
+data reduction을 통해서 sparse해진 Series Data의 사이를 추정하여 이어주는 역할을 하는 module이다. Cache Controller의 요청에 응답하는 방식이다.
+
+### User Display
+
+UI View에 해당하는 내용으로, 여기서는 오픈소스 라이브러리인 **OxyPlot**을 사용하여 visualization 및 interface를 제공하였다.
 
 # Implementation Spec
+
+## Data Reducer
+
+![Data Reducer - UI](ui_reducer.png){#fig:uir}
+
+![Data Reducer - Class Diagram](class_reducer.png){#fig:clr}
+
+Figure {@fig:uir}은 Data Reducer의 UI를 보여주고 있다.
+
+## Data Visualizer
+
+![Data Visualizer - UI](ui_vis.png){#fig:uiv}
+
+![Data Visualizer - Class Diagram](class_vis.png){#fig:clv}
+
+Figure {@fig:uiv}은 Data Visualizer의 UI를 보여주고 있다.
+
+## Used Libraries
+
+- **CSVHelper** : CSV파일 parsing에 사용
+- **OxyPlot** : WPF에 맞는 Graph Control제공
 
 # Current Status
 
@@ -104,9 +153,13 @@ Figure {@fig:arch}에서 보이듯 project 구성은 크게 두 가지 applicati
 
 ![Division & Assignment of Work](ass.png){#fig:ass}
 
+Figure {@fig:ass}를 참조한다.
+
 # Schedule
 
 ![Schedule](schedule.png){#fig:sch}
+
+Figure {@fig:sch}를 참조한다.
 
 # Demo Plan
 
