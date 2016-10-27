@@ -130,15 +130,25 @@ UI View에 해당하는 내용으로, 여기서는 오픈소스 라이브러리�
 
 ![Data Reducer - Class Diagram](class_reducer.png){#fig:clr}
 
-Figure {@fig:uir}은 Data Reducer의 UI를 보여주고 있다.
+Figure {@fig:uir}은 Data Reducer의 UI를 보여주고 있다. `Open`버튼으로 입력받을 csv의 경로를 받고, 이것을 UI Thread와 async하게 작업을 하면서 각 단계마다 진행과정을 화면에 찍어주고, 완료 후에는 소요된 시간을 출력한다. csv입력이 들어올 경우 자동으로 parsing, reducing, create table&inserting순서로 data processing을 거치게 된다. 생성된 table은 자동으로 사용자의 application folder(`USER\AppData\Local\LongVis`)에 저장된다.
+
+Figure {@fig:clr}은 이것의 class diagram을 보여준다. Model에 해당하는 `CSVParser`, `Reducer`, `DBInterface`의 순서로 dataflow가 전개될 것이고, 이것을 ModelView에 해당하는 `MainViewModel`이 처리하여 View에 해당하는 `MainWindow`에 출력해 줄 것이다. 상세한 구현 내용은 Appendix A에서 서술하도록 한다.
 
 ## Data Visualizer
+
+Figure {@fig:uiv}은 Data Visualizer의 UI를 보여주고 있다. `Open`을 누르면 현재 Database에 저장되어 있는 table의 목록이 나오고, 이를 선택하면 해당 Database에서 point를 불러와 visualize하게 된다.
+
+Figure {@fig:clv}은 이것의 class diagram을 보여준다. Model에 해당하는 `DBInterface`에서 Data를 가져오게 되고, ModelView에 해당하는 `MainViewModel`에서 이를 처리하여 View에 해당하는 `MainWindow`에 출력하게 된다. 상세한 구현 내용은 Appendix A에서 서술하도록 한다.
 
 ![Data Visualizer - UI](ui_vis.png){#fig:uiv}
 
 ![Data Visualizer - Class Diagram](class_vis.png){#fig:clv}
 
-Figure {@fig:uiv}은 Data Visualizer의 UI를 보여주고 있다.
+## Database Structure
+
+![Database Structure](dbstruct.png){#fig:db}
+
+Sensor Data는 `timestamp`와 `S_1`, `S_2`, $\cdots$의 형태로 들어오는 double형의 센서별 value로 이루어져 있다. 
 
 ## Used Libraries
 
@@ -146,6 +156,8 @@ Figure {@fig:uiv}은 Data Visualizer의 UI를 보여주고 있다.
 - **OxyPlot** : WPF에 맞는 Graph Control제공
 
 # Current Status
+
+- 
 
 # Future Work
 
