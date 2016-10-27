@@ -1,11 +1,12 @@
-% Long Time Process Data Visualization
-% U조 김민수 조용훤
-% 2016. 10. 28
 ---
+title: Long Time Process Data Visualization
+subtitle: 2016 Fall, 창의적종합설계1 U조 project보고서
+author:
+- 김민수
+- 조용훤
 toc: 1
+toc-depth: 2
 ---
-
-\maketitle
 
 # Abstract & Motivation
 
@@ -51,9 +52,17 @@ Algorithm의 효율성에 의해서 실제 수행 시간이 미미하게만 감�
 
 WPF는 .NET framework에서 사용되는 최신의 GUI framework이다. 기존의 WinForms framework와 달리 design(XAML)과 내부 logic(C#)을 구분하여 독립적으로 작성하기 용이하고, 유지관리를 편리하게 할 수 있다. WPF를 사용하는 데에는 MVVM(Model-View-ViewModel) 패턴을 이해하는 것이 필수적이다. MVVM이란 내부 데이터와 로직을 결정하는 Model과, 유저 인터페이스를 디자인하고 이것의 상호관계를 서술하는 View, 그리고 이 사이에서 데이터와 인터페이스를 매핑하는 방법을 서술하는 ViewModel단으로 분리하여 작성하는 패턴이다.
 
-Figure {@fig:mvvm}에서 보듯, ViewModel은 View에 대해 독립적으로 작성되며, 인터페이스와 데이터 간 바인딩을 통해서 표현방식을 지정해줄 수 있다.
+Figure {@fig:mvvm}에서 보듯, ViewModel은 View에 대해 독립적으로 작성되며, 인터페이스와 데이터 간 binding을 통해서 표현방식을 지정해줄 수 있다. 그리고 또한 내부 Model들과 관계를 맺으면서 database에 대한 접근을 시도할 수 있다. 실제 프로그래밍에 있어서 중요한 지점은 View에서는 ViewModel에 쉽게 접근이 가능하지만, ViewModel에서 View의 specific한 요소들을 접근하는 방향은 허용되지 않는다는 것이다.
 
 ## Data Reduction Algorithms
+
+Time Series Data를 plotting하는 데 있어서 수많은 점을 찍게되면 낭비가 발생한다. 이에 따라 정확성을 잃지 않으면서도 필수적인 점들을 적절하게 추출해내는 알고리즘이 project의 핵심적인 부분이라 할 수 있다. 이것은 data visualization분야에서 연구가 활발하게 되었던 주제이기 때문에 여러 논문들을 참조하여 주제와 연관된 내용들을 정리했다.
+
+### Strip Algorithm
+
+### Visvalingam-Whyatt Algorithm
+
+### Min-max Decimation
 
 ## Database Model
 
@@ -65,7 +74,17 @@ Figure {@fig:mvvm}에서 보듯, ViewModel은 View에 대해 독립적으로 작
 
 ![Project architecture](arch.png){#fig:arch}
 
-# Implementation Sepc
+Figure {@fig:arch}에서 보이듯 project 구성은 크게 두 가지 application으로 나뉘어있다. data를 읽어들여 적절한 형태로 database에 저장하는 Server Application과, 이 database를 기초로 user에게 visualization을 제공하는 Desktop application이 그것이다. 이 둘을 나누어 각각 설명하도록 한다.
+
+## Server Application
+
+### CSV Parsing Module
+
+### Data Reduction Module
+
+### Databse Interface Module
+
+# Implementation Spec
 
 # Current Status
 
@@ -73,8 +92,15 @@ Figure {@fig:mvvm}에서 보듯, ViewModel은 View에 대해 독립적으로 작
 
 # Division & Assignment of Work
 
+![Division & Assignment of Work](ass.png){#fig:ass}
+
 # Schedule
+
+![Schedule](schedule.png){#fig:sch}
 
 # Demo Plan
 
-# [Appendix] Detailed Implementation Spec
+\appendix
+\section{(Appendix) Detailed Implementation Spec} \label{App:AppendixA}
+
+## abc
