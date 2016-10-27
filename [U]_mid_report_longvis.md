@@ -57,11 +57,15 @@ Figure {@fig:mvvm}에서 보듯, ViewModel은 View에 대해 독립적으로 작
 ## Data Reduction Algorithms
 
 Data Reduction Algorithm은 보통 머신 러닝 분야에서 활발하고 사용되고 있는 알고리즘이다. 그렇지만 그 정의는 '숫자나 문자 형식의 디지털 정보를 의미있는 부분만을 남기고 Reduction하는 것'이기 때문에 본 프로젝트의 요구사항을 충족시키기에 가장 적합한 알고리즘이다.   
+
 이 분야는 이미 대부분의 연구가 끝나 있기 때문에 우리는 몇 개의 논문을 빠르게 찾아낼 수 있었다. 수많은 연구들 중에서 우리가 주목한 것들은 직접적으로 선과 선을 잇되 각각의 형태에 대응하는 방식들이었다. 이 기법들은 실제로 그래프의 각 부분에 대응하여 구체적인 적용이 가능하다. 다행히도 대부분의 연구들에서 그 계산식 또한 제공하고 정확성에 대한 검증도 끝나있었기에 그것들을 선택하고 사용하는 것은 까다롭지가 않았다.   
+
 주로 참고한 연구들은 다음과 같다.
 
 Abenstein, J. P., & Tompkins, W. J. (1982). A new data-reduction algorithm for real-time ECG analysis. IEEE Transactions on Biomedical Engineering, (1), 43-48.
+
 Robergé, J. (1985). A data reduction algorithm for planar curves. Computer Vision, Graphics, and Image Processing, 29(2), 168-195.
+
 Steinarsson, S. (2013). Downsampling time series for visual representation.
 
 ### Strip Algorithm
@@ -91,6 +95,7 @@ Steinarsson, S. (2013). Downsampling time series for visual representation.
 본 프로젝트는 2인 1조로 구성되어 진행되며 버젼 관리 도구로 gitlab을 이용해서 개발될 것이다. gitlab은 일반적으로 쓰이는 github에 비해서 더 강력한 GUI와 Issue Tracking 기능을 지원하기 때문에 강점이 있다. 
 개발 언어는 C#를 선택했다. C#은 여러 가지 언어의 장점을 모아서 구축된 언어로서 장점도 많지만 단점도 많은 것으로 알려져 있다. 대표적으로 C와 JAVA를 섞은 것 같아서 시스템 컨트롤이 가능하고 객체 지향적이라는 장점이 있지만 Windows 환경에만 적합하다는 단점이 있다. 그러나 본 프로젝트의 경우는 Windows 환경만을 고려해도 되므로 단점은 없고 장점만 있기에 선택하게 되었다. 구체적인 IDE는 Visual Studio 2015를 사용한다. 해당 IDE는 C# 6.0과 .Net Framework 4.6 버젼을 지원하며 안정화된 제품이기 때문이다.
 또한 DB 구축을 위해서 SQL 계열의 언어를 사용할 것이고 후보군으로는 MYSQL과 SQLITE가 있다. 이 두 가지 중 하나를 선택해서 Local DB를 구축한다. 거기에 수집된 데이터는 CSV 형식의 Excel 파일로 1차적으로 저장되고 이것을 CSV reader 방식으로 읽어들여서 DB에 저장하는 방식을 취한다. reader에는 여러 후보군이 있었으나 벤치마크 결과에 따르면 CSV reader가 가장 좋은 수치를 보여 채택하게 되었다. 
+
 마지막으로 서비스 환경은 i7-4970, 8GB RAM, 500GB HDD, Windos7 64-bit이다.    
 
 # Project Architecture
