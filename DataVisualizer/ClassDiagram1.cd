@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DataVisualizer.DBInterface">
-    <Position X="0.5" Y="2.5" Width="1.5" />
+    <Position X="1.75" Y="0.5" Width="1.5" />
     <Members>
       <Field Name="conn" Hidden="true" />
     </Members>
@@ -14,7 +14,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="DataVisualizer.Env">
-    <Position X="4.75" Y="4" Width="1.5" />
+    <Position X="0.5" Y="2.5" Width="1.5" />
     <Members>
       <Field Name="_app" Hidden="true" />
       <Field Name="_dbpath" Hidden="true" />
@@ -26,45 +26,28 @@
       <FileName>Env.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="DataVisualizer.BindableMenuItem" Collapsed="true">
-    <Position X="2.25" Y="4.75" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAEBAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MainViewModel.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="DataVisualizer.MainViewModel" BaseTypeListCollapsed="true">
     <Position X="2.25" Y="2.5" Width="2.25" />
     <Members>
       <Field Name="_log_past" Hidden="true" />
       <Field Name="_Logger" Hidden="true" />
-      <Field Name="A" Hidden="true" />
-      <Field Name="B" Hidden="true" />
-      <Field Name="BLOCK" Hidden="true" />
       <Field Name="db" Hidden="true" />
-      <Field Name="line" Hidden="true" />
-      <Property Name="load_max" Hidden="true" />
-      <Property Name="load_now" Hidden="true" />
-      <Property Name="Logger" Hidden="true" />
+      <Method Name="MainViewModel" Hidden="true" />
       <Property Name="MenuCollection" Hidden="true" />
-      <Field Name="name" Hidden="true" />
       <Method Name="OnPropertyChanged" Hidden="true" />
-      <Method Name="open_table" Hidden="true" />
       <Property Name="opentable" Hidden="true" />
-      <Property Name="Plot" Hidden="true" />
-      <Event Name="PropertyChanged" Hidden="true" />
       <Field Name="sw" Hidden="true" />
       <Field Name="timer" Hidden="true" />
     </Members>
     <NestedTypes>
-      <Delegate Name="DataVisualizer.MainViewModel.d_open_table" Collapsed="true">
+      <Delegate Name="DataVisualizer.MainViewModel.d_cache_update" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>MainViewModel.cs</NewMemberFileName>
         </TypeIdentifier>
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAUAAgAAACIQAAAAIAgABABQgAEEAAkBAABEIAEgIAA=</HashCode>
+      <HashCode>ACQAEgIAACIQAAAAIAgABAAAgAAAAAkAAABEAAAAIAA=</HashCode>
       <FileName>MainViewModel.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -79,6 +62,17 @@
       <FileName>MainWindow.xaml.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DataVisualizer.CacheController">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <Members>
+      <Property Name="load_max" Hidden="true" />
+      <Property Name="load_now" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAQAAAAAAAAAAAQAAAEAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>CacheController.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Font Name="맑은 고딕" Size="9" />
 </ClassDiagram>

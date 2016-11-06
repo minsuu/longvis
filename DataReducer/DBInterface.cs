@@ -62,6 +62,7 @@ namespace DataReducer
             }
             return r;
         }
+
         public DataTable GetDataTable(string q)
         {
             try

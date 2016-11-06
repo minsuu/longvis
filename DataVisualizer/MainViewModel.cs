@@ -60,11 +60,6 @@ namespace DataVisualizer
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private const int BLOCK = 50;
-        private const string name = @"..\..\..\Dataset\dat.csv";
-        private const int A = 0;
-        private const int B = 500000;
-
         public ObservableCollection<BindableMenuItem> MenuCollection { get; set; } = new ObservableCollection<BindableMenuItem>();
         public RelayCommand opentable { get; set; }
         private string _Logger;
@@ -78,52 +73,37 @@ namespace DataVisualizer
             }
         }
         private DBInterface db = new DBInterface();
-        public delegate void d_open_table(string name);
         public PlotModel Plot { get; set; } = new PlotModel();
-        private LineSeries line;
 
         public MainViewModel()
         {
-            opentable = new RelayCommand(o => Open_table(o.ToString()));
+            opentable = new RelayCommand(o => Open_clicked(o.ToString()));
             timer.Interval = 500;
             timer.Elapsed += new ElapsedEventHandler((a, b) => Log_update());
             foreach (string t in db.tables())
             {
                 MenuCollection.Add(new BindableMenuItem(t, null, opentable));
             }
-            line = new LineSeries();
-            line.Title = "line";
-            Plot.Series.Add(line);
             Plot.LegendTitle = "Legend";
         }
 
-        public void Open_table(string name)
+        public delegate void d_cache_update();
+        public CacheController cc;
+        public void cache_update()
         {
-            d_open_table work = open_table;
-            work.BeginInvoke(name, null, null);
-        }
-        
-        private int load_max { get; set; } = 1;
-        private int load_now { get; set; } = 0;
-        public void open_table(string name)
-        {
-            Log_begin("loading " + name, false);
-            Plot.Title = name;
-            using (Timer upd = new Timer())
-            {
-                var cnt = db.GetDataTable("SELECT count(id) FROM " + name);
-                load_max = Convert.ToInt32(cnt.Rows[0].ItemArray[0]);
-                var data = db.GetDataTable("SELECT * FROM " + name);
-                line.Points.Clear();
-                for(load_now = 0; load_now < load_max; load_now++)
-                {
-                    line.Points.Add(new DataPoint(load_now, (double)data.Rows[load_now].ItemArray[3]));
-                }
-            }
-            Plot.InvalidatePlot(true);
+            Log_begin("loading " + cc.name, false);
+            
             Log_end();
         }
 
+        public void Open_clicked(string name)
+        {
+            Plot.Title = name;
+            cc = new CacheController(db, name);
+            d_cache_update work = cache_update;
+            work.BeginInvoke(null, null);
+        }
+        
         Stopwatch sw = new Stopwatch();
         Timer timer = new Timer();
         private string _log_past;
