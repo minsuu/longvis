@@ -23,3 +23,6 @@ C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x64\Debug\DataVisualizer.csproj.GenerateResource.Cache
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x64\Debug\DataVisualizer.exe
 C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x64\Debug\DataVisualizer.pdb
+C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\bin\x64\Debug\DataVisualizer.exe.config
+C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x64\Debug\DataVisualizer.exe
+C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataVisualizer\obj\x64\Debug\DataVisualizer.pdb

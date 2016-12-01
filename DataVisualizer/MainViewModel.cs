@@ -74,6 +74,7 @@ namespace DataVisualizer
         }
         private DBInterface db = new DBInterface();
         public PlotModel Plot { get; set; } = new PlotModel();
+        public int Plot_width { get; set; } = 0;
 
         public MainViewModel()
         {
@@ -92,7 +93,11 @@ namespace DataVisualizer
         public void cache_update()
         {
             Log_begin("loading " + cc.name, false);
-            
+            cc.fill_data(cc.data_l, cc.data_r, Plot_width);
+            Plot.Series.Clear();
+            foreach (var a in cc.line)
+                Plot.Series.Add(a);
+            Plot.InvalidatePlot(true);
             Log_end();
         }
 

@@ -76,7 +76,7 @@ namespace DataReducer
             mv.Log_end();
 
             name = name.Split('.')[0];
-            string s = db.CreateTable(name, csvparser);
+            string s = db.createTable(name, csvparser);
             mv.Log("Created table with " + s);
 
             using (var timer = new System.Timers.Timer())

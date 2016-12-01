@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Diagnostics;
 
 namespace DataVisualizer
 {
@@ -13,6 +14,12 @@ namespace DataVisualizer
         {
             InitializeComponent();
             mv = this.DataContext as MainViewModel;
+        }
+
+        private void PlotView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            FrameworkElement s = sender as FrameworkElement;
+            mv.Plot_width = (int)s.ActualWidth;
         }
     }
 }

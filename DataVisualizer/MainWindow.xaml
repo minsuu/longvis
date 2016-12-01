@@ -28,6 +28,6 @@
                 <TextBlock x:Name="f_status" Text="{Binding Logger}"/>
             </StatusBarItem>
         </StatusBar>
-        <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5"/>
+        <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
     </DockPanel>
 </Window>
