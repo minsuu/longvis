@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Data.SQLite;
+using System.Windows.Media;
 
 namespace DataReducer
 {
-    static class Env
+    static public class Env
     {
         static Env()
         {
@@ -52,6 +53,10 @@ namespace DataReducer
         public static string dbBaseScheme { get; set; }
         public static string dbTableScheme { get; set; }
         public static string dbTableAppend { get; set; }
+
+        public static SolidColorBrush colA { get; set; } = new SolidColorBrush(Color.FromRgb(0, 67, 88));
+        public static SolidColorBrush colB { get; set; } = new SolidColorBrush(Color.FromRgb(31, 138, 112));
+
 
         private static string _app = "";
         public static string app

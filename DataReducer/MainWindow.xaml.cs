@@ -43,9 +43,11 @@ namespace DataReducer
 
         public MainWindow()
         {
+            /*
             InitializeComponent();
             mv = DataContext as MainViewModel;
             Table_reload();
+            */
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -94,8 +96,8 @@ namespace DataReducer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
-            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
+//            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
+//            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
             Table_reload();
         }
     }

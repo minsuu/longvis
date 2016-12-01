@@ -6,23 +6,35 @@
         xmlns:local="clr-namespace:DataReducer"
         mc:Ignorable="d"
         Title="Data Reducer" Height="500" Width="600">
+    <Window.Resources>
+        <Color x:Key="ColorA">#004358</Color>
+        <Color x:Key="ColorB">#1F8A70</Color>
+        <Color x:Key="ColorC">#BEDB39</Color>
+        <Color x:Key="ColorD">#FFE11A</Color>
+        <Color x:Key="ColorE">#FD7400</Color>
+        <SolidColorBrush x:Key="TitleFillBrush" Color="{DynamicResource ColorB}"/>
+    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <DockPanel>
+        <Border Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="70" x:Name="titlebar">
+            <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor,AncestorType=Window},FallbackValue=Title}" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center" Foreground="White">
+           </TextBlock>
+        </Border>
+        <Border BorderBrush="LightGray" BorderThickness="3" Padding="4">
+            <TabControl Name="tabControl">
+                <TabItem Header="tabItem1" Visibility="Collapsed">
+                    <TextBlock>aaa</TextBlock>
+                </TabItem>
+                <TabItem Header="tabItem2" Visibility="Collapsed"/>
+            </TabControl>
+        </Border>
+    </DockPanel>
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
-    <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed"></CommandBinding>
-    </Window.CommandBindings>
-    <DockPanel>
-        <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
-                <Button Command="ApplicationCommands.Open">Open</Button>
-            </ToolBar>
-        </ToolBarTray>
-        <DockPanel DockPanel.Dock="Right" Width="150">
-            <TextBlock DockPanel.Dock="Top">Table List</TextBlock>
-            <Button DockPanel.Dock="Bottom" Margin ="3" Content="Drop" Height="30" Click="Button_Click"/>
-            <ListBox x:Name="f_tablelist" Margin="3" ItemsSource="{Binding Tables}"/>
-        </DockPanel>
-        <TextBox x:Name="LogBox" Margin="3" Text="{Binding Logger}" IsReadOnly="True"/>
-    </DockPanel>
+    
 </Window>
