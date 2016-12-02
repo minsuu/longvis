@@ -10,6 +10,13 @@ using System.Timers;
 
 namespace DataReducer
 {
+    public class nameSource
+    {
+        public string oldname { get; set; }
+        public string newname { get; set; }
+        public bool isTimestamp { get; set; }
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -17,20 +24,50 @@ namespace DataReducer
         public MainViewModel()
         {
             Tables = new ObservableCollection<string>();
-            timer.Interval = 500;
-            timer.Elapsed += new ElapsedEventHandler((a,b) => Log_update());
+            /*
+                        timer.Interval = 500;
+                        timer.Elapsed += new ElapsedEventHandler((a,b) => Log_update());
+            */
+            nameSourceCol.Add(new nameSource { oldname = "1", newname = "2", isTimestamp = true });
         }
 
-        private string _Logger;
-        public string Logger {
-            get { return _Logger; }
+        private string _tableName;
+        public string tableName {
+            get { return _tableName; }
             set
             {
-                _Logger = value;
-                OnPropertyChanged("Logger");
+                _tableName = value;
+                OnPropertyChanged("tableName");
             }
         }
 
+        private ObservableCollection<nameSource> _nameSourceCol = new ObservableCollection<nameSource>();
+        public ObservableCollection<nameSource> nameSourceCol
+        {
+            get { return _nameSourceCol; }
+            set
+            {
+                _nameSourceCol = value;
+                OnPropertyChanged("nameSourceCol");
+            }
+        }
+
+        CSVParser currentCSVParser;
+
+        public void openFile(string path, string name)
+        {
+            // use name as default table name
+            name = name.Split('.')[0];
+            tableName = name;
+            currentCSVParser = new CSVParser(path);
+            nameSourceCol.Clear();
+            foreach(var s in currentCSVParser.headers)
+            {
+                nameSourceCol.Add(new nameSource() { oldname = s, newname = s, isTimestamp = false });
+            }
+        }
+
+/*
         Stopwatch sw = new Stopwatch();
         Timer timer = new Timer();
         private string _log_past;
@@ -67,7 +104,7 @@ namespace DataReducer
             _log_past += "\nCompleted! Time elapsed : " + sw.ElapsedMilliseconds/1000.0 + "s\n";
             Logger = _log_past;
         }
-
+*/
         public ObservableCollection<string> Tables { get; set;}
         protected void OnPropertyChanged(string name)
         {

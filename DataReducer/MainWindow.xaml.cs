@@ -25,8 +25,11 @@ namespace DataReducer
     {
         private MainViewModel mv;
         private DBInterface db = new DBInterface();
-        private CSVParser csvparser = new CSVParser();
         private bool onload = false;
+
+        private int tab1state = 0; // 0, 1, 2
+        private int tab2state = 0;
+        private int tab3state = 0;
 
         public void Table_reload(IAsyncResult res = null)
         {
@@ -43,11 +46,8 @@ namespace DataReducer
 
         public MainWindow()
         {
-            /*
             InitializeComponent();
             mv = DataContext as MainViewModel;
-            Table_reload();
-            */
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -58,24 +58,14 @@ namespace DataReducer
         public delegate void d_csv_open(string path, string name);
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.DefaultExt = ".csv";
-            dlg.Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt";
-
-            bool? result = dlg.ShowDialog();
-            if (result == true)
-            {
-                d_csv_open work = csv_open;
-                work.BeginInvoke(dlg.FileName, dlg.SafeFileName, Table_reload, null);
-            }
+            
         }
 
+        /*
         private void csv_open(string path, string name)
         {
             onload = true;
-            mv.Log_begin("Load " + path);
-            csvparser.Open(path);
-            mv.Log_end();
+            csvparser.Open();
 
             name = name.Split('.')[0];
             string s = db.createTable(name, csvparser);
@@ -93,12 +83,60 @@ namespace DataReducer
             }
             onload = false;
         }
+        */
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 //            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
 //            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
             Table_reload();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void buttonWindowMin_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void buttonWindowMax_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void buttonWindowClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        CSVParser currParser;
+        private void buttonFileOpen_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.DefaultExt = ".csv";
+            dlg.Filter = "CSV Files (*.csv)|*.csv|Text Files (*.txt)|*.txt";
+
+            bool? result = dlg.ShowDialog();
+            if (result == true)
+            {
+                tab1state = 1;
+                Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 1));
+                currParser = new CSVParser(dlg.FileName);
+
+                mv.openFile(dlg.FileName, dlg.SafeFileName);
+                 
+                /*
+                d_csv_open work = csv_open;
+                work.BeginInvoke(dlg.FileName, dlg.SafeFileName, Table_reload, null);
+                */
+            }
+        }
+
+        private void tabInfoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 0));
         }
     }
 }

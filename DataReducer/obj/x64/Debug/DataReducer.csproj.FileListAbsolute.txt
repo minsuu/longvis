@@ -37,3 +37,13 @@ C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\x64\
 C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\x64\Debug\DataReducer.g.resources
 C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\x64\Debug\DataReducer.Properties.Resources.resources
 C:\Users\Minsu\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\obj\x64\Debug\DataReducer.csproj.GenerateResource.Cache
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\MySql.Data.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\MySql.Data.xml
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Converters.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Core.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Css.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Dom.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Model.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Rendering.Gdi.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Rendering.Wpf.dll
+C:\Users\lemon\OneDrive - 서울대학교\proj\Longtime_vis\DataReducer\bin\x64\Debug\SharpVectors.Runtime.dll

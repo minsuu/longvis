@@ -38,17 +38,23 @@ namespace DataReducer
         public string[] headers { get; set; }
         public int raw_len { get; set; }
 
-        public CSVParser(){
-        }
-
-        public void Open(string path)
-        {
-            raw.Clear();
+        private string path;
+        public CSVParser(string path){
+            this.path = path;
             using (TextReader textReader = File.OpenText(path))
             {
                 var csv = new CsvReader(textReader);
                 csv.Read();
                 headers = csv.FieldHeaders;
+            }
+        }
+
+        public void open(string path)
+        {
+            using (TextReader textReader = File.OpenText(path))
+            {
+                var csv = new CsvReader(textReader);
+                csv.Read();
                 foreach(string s in headers)
                 {
                     raw[s] = new List<double>();
