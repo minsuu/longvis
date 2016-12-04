@@ -13,6 +13,13 @@ namespace DataReducer
     {
         static Env()
         {
+            dateFormats = new List<string>();
+            dateFormats.Add("yyyyMMdd HH:mm:ss.fff");
+            dateFormats.Add("HH:mm:ss.fff");
+            dateFormats.Add("mm:ss.fff");
+            dateFormats.Add("mm:ss.ff");
+            dateFormats.Add("mm:ss.f");
+            
             dbServerAddress = "localhost";
             dbUid = "root";
             dbPassword = "qwer";
@@ -40,7 +47,7 @@ namespace DataReducer
                            "sensor TINYINT NOT NULL, " +
                            "sensornames VARCHAR(255)";
             dbTableScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                            "timestamp DOUBLE, ";
+                            "timestamp BIGINT unsigned, ";
             dbTableAppend = "S{0} DOUBLE, Q{0} BIGINT";
         }
 
@@ -53,49 +60,10 @@ namespace DataReducer
         public static string dbBaseScheme { get; set; }
         public static string dbTableScheme { get; set; }
         public static string dbTableAppend { get; set; }
+        public static List<string> dateFormats { get; set; } 
 
         public static SolidColorBrush colA { get; set; } = new SolidColorBrush(Color.FromRgb(0, 67, 88));
         public static SolidColorBrush colB { get; set; } = new SolidColorBrush(Color.FromRgb(31, 138, 112));
 
-
-        private static string _app = "";
-        public static string app
-        {
-            get { return _app; }
-            set
-            {
-                _app = value;
-                root = value + @"\LongVis";
-                dbpath = root + @"\data.db";
-            }
-        }
-
-        private static string _root = "";
-        public static string root
-        {
-            get { return _root; }
-            set
-            {
-                if (!Directory.Exists(value))
-                {
-                    Directory.CreateDirectory(value);
-                }
-                _root = value;
-            }
-        }
-
-        private static string _dbpath = "";
-        public static string dbpath
-        {
-            get { return _dbpath; }
-            set
-            {
-                if (!File.Exists(value))
-                {
-                    SQLiteConnection.CreateFile(value);
-                }
-                _dbpath = value;
-            }
-        }
     }
 }

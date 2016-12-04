@@ -24,13 +24,13 @@ namespace DataReducer
     public partial class MainWindow : Window
     {
         private MainViewModel mv;
-        private DBInterface db = new DBInterface();
         private bool onload = false;
 
         private int tab1state = 0; // 0, 1, 2
-        private int tab2state = 0;
-        private int tab3state = 0;
+        private int tab2state = 3; // 3
+        private int tab3state = 4; // 4
 
+        /*
         public void Table_reload(IAsyncResult res = null)
         {
             this.Dispatcher.Invoke((Action)(() =>
@@ -42,7 +42,7 @@ namespace DataReducer
                 }
             }));
             
-        }
+        }*/
 
         public MainWindow()
         {
@@ -55,7 +55,6 @@ namespace DataReducer
             e.CanExecute = !onload;
         }
 
-        public delegate void d_csv_open(string path, string name);
         private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             
@@ -89,7 +88,6 @@ namespace DataReducer
         {
 //            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
 //            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
-            Table_reload();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -124,9 +122,7 @@ namespace DataReducer
                 tab1state = 1;
                 Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 1));
                 currParser = new CSVParser(dlg.FileName);
-
                 mv.openFile(dlg.FileName, dlg.SafeFileName);
-                 
                 /*
                 d_csv_open work = csv_open;
                 work.BeginInvoke(dlg.FileName, dlg.SafeFileName, Table_reload, null);
@@ -136,7 +132,16 @@ namespace DataReducer
 
         private void tabInfoBackButton_Click(object sender, RoutedEventArgs e)
         {
+            currParser = null;
+            tab1state = 0;
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 0));
+        }
+
+        private void tabInfoSubmitButton_Click(object sender, RoutedEventArgs e)
+        {
+            tab1state = 2;
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 2));
+            mv.processFile();
         }
     }
 }

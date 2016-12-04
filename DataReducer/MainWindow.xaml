@@ -166,7 +166,7 @@
                             <Button x:Name="tabInfoBackButton" Click="tabInfoBackButton_Click">
                                 <svgc:SvgViewbox Source="/Resources/arrow-left.svg"/>
                             </Button>
-                            <Button HorizontalAlignment="Right">
+                            <Button x:Name="tabInfoSubmitButton" HorizontalAlignment="Right" Click="tabInfoSubmitButton_Click">
                                 <svgc:SvgViewbox Source="/Resources/arrow-right.svg"/>
                             </Button>
                         </DockPanel>
@@ -197,12 +197,46 @@
                 </TabItem>
                 <TabItem Header="tabProgress">
                     <Grid>
+                        <DockPanel VerticalAlignment="Bottom" Panel.ZIndex="1000">
+                            <DockPanel.Resources>
+                                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Name="border">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Opacity" Value="0.75" />
+                                                        <Setter Property="BorderBrush" Value="Gainsboro" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Opacity" Value="0.25" />
+                                                        <Setter Property="BorderBrush" Value="Transparent" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+                                    <Setter Property="Margin" Value="4"/>
+                                    <Setter Property="Width" Value="40"/>
+                                    <Setter Property="Height" Value="40"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DockPanel.Resources>
+                            <Button x:Name="tabProgressBackButton">
+                                <svgc:SvgViewbox Source="/Resources/arrow-left.svg"/>
+                            </Button>
+                        </DockPanel>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label>Loading CSV files...</Label>
+                            <Label x:Name="labelStage1" Foreground="{Binding Path=step1_col}">Loading CSV files...</Label>
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}"/>
-                            <Label>Processing data reduction...</Label>
+                            <Label x:Name="labelStage2" Foreground="{Binding Path=step2_col}">Processing data reduction...</Label>
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}"/>
-                            <Label>Creating table and inserting data...</Label>
+                            <Label x:Name="labelStage3" Foreground="{Binding Path=step3_col}">Creating table and inserting data...</Label>
                         </StackPanel>
                     </Grid>
                 </TabItem>

@@ -6,37 +6,19 @@ using System.Threading.Tasks;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
+using System.Diagnostics;
 
 namespace DataReducer
 {
-    // date_time,S_1,S_2,S_3,S_4,S_5
-    /*
-    public class RawData
-    {
-        public double[] S { get; internal set; }
-    }
-
-    public sealed class RawDataMap : CsvClassMap<RawData>
-    {
-        public RawDataMap()
-        {
-            Map(x => x.S).ConvertUsing(delegate (ICsvReaderRow row)
-            {
-                double[] r = new double[5];
-                for(int i=0; i<5; i++)
-                {
-                    r[i] = double.Parse(row.GetField("S_" + (i + 1)));
-                }
-                return r;
-            });
-        }
-    }*/
-
     public class CSVParser
     {
-        public Dictionary<string, List<double>> raw { get; set; } = new Dictionary<string, List<double>>();
+        public Dictionary<string, List<double>> rawdata { get; set; } = new Dictionary<string, List<double>>();
+
         public string[] headers { get; set; }
         public int raw_len { get; set; }
+
+        // woking progress. 0~100.
+        public double workProgress { get; set; }
 
         private string path;
         public CSVParser(string path){
@@ -49,34 +31,44 @@ namespace DataReducer
             }
         }
 
-        public void open(string path)
+        private static readonly DateTime Epoch = new DateTime(1, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public bool open(nameSource[] namesource)
         {
             using (TextReader textReader = File.OpenText(path))
             {
                 var csv = new CsvReader(textReader);
                 csv.Read();
-                foreach(string s in headers)
+                for(int i=0;i<namesource.Length;i++)
                 {
-                    raw[s] = new List<double>();
+                    rawdata[namesource[i].newname] = new List<double>();
                 }
 
-                int idx = 0;
                 while (csv.Read())
                 {
-                    foreach(string s in headers)
+                    for(int i = 0; i < namesource.Length; i++)
                     {
-                        if(s == "date_time")
+                        double ins = 0;
+                        if (namesource[i].isTimestamp)
                         {
-                            raw[s].Add(idx);
+                            string time = csv.GetField<string>(headers[i]);
+                            DateTime tmp;
+                            if(DateTime.TryParse(time, out tmp) ||
+                                DateTime.TryParseExact(time, Env.dateFormats.ToArray(), null, System.Globalization.DateTimeStyles.NoCurrentDateDefault, out tmp))
+                            {
+                                ins = (tmp - Epoch).TotalMilliseconds;
+                            }else
+                            {
+                                return false;
+                            }
                         }else
                         {
-                            raw[s].Add(csv.GetField<double>(s));
+                            ins = csv.GetField<double>(headers[i]);
                         }
+                        rawdata[namesource[i].newname].Add(ins);
                     }
-                    idx++;
                 }
-                raw_len = idx;
             }
+            return true;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.IO;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Windows;
+using System.Diagnostics;
 
 namespace DataReducer
 {
@@ -16,25 +17,6 @@ namespace DataReducer
         private MySqlConnection conn;
         // woking progress. 0~100.
         public double workProgress { get; set; }
-
-        public int ins_max { get; set; }
-        public int ins_now { get; set; }
-
-        private void createDB()
-        {
-            string strConn = @"Server={0};Uid={1};Pwd={2};";
-            try
-            {
-                conn = new MySqlConnection(string.Format(strConn, Env.dbServerAddress, Env.dbUid, Env.dbPassword));
-                conn.Open();
-
-            }
-            catch(MySqlException ex)
-            {
-                MessageBox.Show(ex.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Stop);
-                Application.Current.Shutdown();
-            }
-        }
 
         // constructor
         public DBInterface()
@@ -66,12 +48,22 @@ namespace DataReducer
                     Application.Current.Shutdown();
                 }
             }
-            ins_max = 1; ins_now = 0;
+
+            // check info table exists..
+            using (var res = getDataTable(string.Format(@"SHOW TABLES LIKE '{0}'", Env.dbBaseName)))
+            {
+                if(res?.Rows.Count == 0)
+                {
+                    execute(string.Format("CREATE TABLE {0} ({1})", Env.dbBaseName, Env.dbBaseScheme));
+                }
+            }
             workProgress = 0;
         }
 
+        // insertion
         public void insert(string name, CSVParser csv)
         {
+            /*
             using (var cmd = new MySqlCommand())
             {
                 cmd.Connection = conn;
@@ -97,13 +89,14 @@ namespace DataReducer
                     }
                     trans.Commit();
                 }
-            }
+            }*/
         }
 
+        // tables list..
         public List<string> tables()
         {
             string q = @"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = `{0}`";
-            DataTable t = GetDataTable(string.Format(q, Env.dbDatabase));
+            DataTable t = getDataTable(string.Format(q, Env.dbDatabase));
             List<string> r = new List<string>();
             if (t?.Rows == null) return r;
             foreach(DataRow row in t?.Rows)
@@ -113,7 +106,8 @@ namespace DataReducer
             return r;
         }
 
-        public DataTable GetDataTable(string q)
+        // retrieving data
+        public DataTable getDataTable(string q)
         {
             try
             {
@@ -127,38 +121,15 @@ namespace DataReducer
                     }
                 }
             }
-            catch(Exception e)
+            catch(MySqlException ex)
             {
-                Console.WriteLine(e.Message);
+                MessageBox.Show(ex.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Stop);
+                Application.Current.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Background);
                 return null;
             }
         }
-            /*
-            CREATE TABLE posts ( 
-                  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                  subject varchar(255) NOT NULL,
-                  content mediumtext,
-                  created datetime,
-                  user_id int(10) unsigned NOT NULL,
-                  user_name varchar(32) NOT NULL,
-                  hit int(10) unsigned NOT NULL default '0',  
-                  PRIMARY KEY (id)
-            );
-             */
-        public string createTable(string tableName, CSVParser csv)
-        {
-            StringBuilder q = new StringBuilder(string.Format(@"CREATE TABLE `{0}`(", tableName));
-            q.Append(Env.dbTableScheme);
-            foreach(string h in csv.headers)
-            {
-                q.Append(h + " DOUBLE, ");
-            }
-            q.Remove(q.Length - 2, 2);
-            q.Append(")");
-            execute(q.ToString());
-            return q.ToString();
-        }
 
+        // general execution function
         public void execute(MySqlCommand comm)
         {
             try
@@ -171,6 +142,7 @@ namespace DataReducer
                 Application.Current.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Background);
             }
         }
+
         public void execute(string q)
         {
             MySqlCommand comm = new MySqlCommand(q, conn);
