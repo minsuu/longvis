@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Data.SQLite;
+using System.Timers;
 
 namespace DataReducer
 {
@@ -137,11 +138,58 @@ namespace DataReducer
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 0));
         }
 
+        Timer timer;
         private void tabInfoSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            tab1state = 2;
-            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 2));
-            mv.processFile();
+            try
+            {
+                if (mv.db.table_exists(textTableName.Text))
+                {
+                    MessageBox.Show("이미 존재하는 테이블명입니다.", "에러!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                tab1state = 2;
+                Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 2));
+                mv.processFile();
+            }catch(Exception err)
+            {
+                MessageBox.Show(err.Message, "에러!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void SettingSaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            Env.dbServerAddress = textDBAddress.Text;
+            Env.dbUid = textUserID.Text;
+            Env.dbPassword = textUserPass.Password;
+        }
+
+        private void TabSettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-off.svg");
+            TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-off.svg");
+            TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-on.svg");
+            textDBAddress.Text = Env.dbServerAddress;
+            textUserID.Text = Env.dbUid;
+            textUserPass.Password = Env.dbPassword;
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab3state));
+        }
+
+        private void TabListButton_Click(object sender, RoutedEventArgs e)
+        {
+            TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-off.svg");
+            TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-on.svg");
+            TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-off.svg");
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab2state));
+        }
+
+        private void TabInsertButton_Click(object sender, RoutedEventArgs e)
+        {
+            TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-on.svg");
+            TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-off.svg");
+            TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-off.svg");
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab1state));
         }
     }
 }

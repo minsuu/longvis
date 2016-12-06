@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace DataReducer
 {
@@ -34,9 +35,95 @@ namespace DataReducer
             return null;
         }
 
-        static List<int> reduce_MnM(ref List<double> px, ref List<double> py, int[] blocks)
+
+        const double eps = 1e-7;
+        public static void reduce_MinMax(List<double> px, List<double> py, out long[] result)
         {
-            return null;
+            result = new long[px.Count];
+            index = 0; len = px.Count;
+
+            // for duplicated timestamp...
+            jumpTable = new int[px.Count];
+            jumpEntry = new reduce_Entry[px.Count];
+            for(int j = 0; j < px.Count;)
+            {
+                int i = j++;
+                jumpEntry[i] = new reduce_Entry(i, i, i, i);
+                while(j!=px.Count && (px[j]-px[i]) < eps)
+                {
+                    if (py[jumpEntry[i].maxp] < py[j])
+                        jumpEntry[i].maxp = j;
+                    if (py[jumpEntry[i].minp] > py[j])
+                        jumpEntry[i].minp = j;
+                    j++;
+                }
+                jumpEntry[i].end = j-1;
+                jumpTable[i] = j;
+            }
+
+            try
+            {
+                reduce_MinMax_rec(px.First(), px.Last(), 0, px, py, ref result);
+            }catch(Exception e)
+            {
+                Debug.Print(e.ToString());
+            }
+        }
+        
+        // woking progress. 0~100.
+        public static double workProgress {
+            get
+            {
+                return (double)index / len * 100;
+            }
+        }
+
+        private struct reduce_Entry
+        {
+            public int begin, end, maxp, minp;
+            public reduce_Entry(int _begin, int _end, int _maxp, int _minp)
+            {
+                begin = _begin; end = _end; maxp = _maxp; minp = _minp;
+            }
+        }
+        private static reduce_Entry reduce_EntryNull = new reduce_Entry(-1,-1,-1,-1);
+        private static int index;
+        private static int len;
+        private static int[] jumpTable;
+        private static reduce_Entry[] jumpEntry;
+
+        /// <summary>
+        ///     [leftBound, rightBound]의 구간에서 index로부터 출발해서 result에다 값을 할당한다
+        /// </summary>
+        /// <param name="leftBound">좌측 한계</param>
+        /// <param name="rightBound">우측 한계</param>
+        /// <param name="index">시작 index</param>
+        /// <param name="px">x좌표 값들</param>
+        /// <param name="py">y좌표 값들</param>
+        /// <param name="result">결과 bitmask</param>
+        private static reduce_Entry reduce_MinMax_rec(double leftBound, double rightBound, int depth, List<double> px, List<double> py, ref long[] result)
+        {
+            if (jumpTable[index] == px.Count || rightBound < px[jumpTable[index]]) {
+                reduce_Entry ret = jumpEntry[index];
+                for(int i=index;i<jumpTable[index];i++)
+                    result[i] = 1 << depth;
+                index = jumpTable[index];
+                return ret;
+            }
+            
+            double mid = (leftBound + rightBound) / 2;
+            reduce_Entry left = reduce_MinMax_rec(leftBound, mid, depth+1, px, py, ref result);
+            reduce_Entry right = reduce_MinMax_rec(mid, rightBound, depth+1, px, py, ref result);
+            Debug.Assert(left.begin != -1);
+            Debug.Assert(right.begin != -1);
+
+            result[left.begin] = 1 << depth;
+            result[right.end] = 1 << depth;
+            bool maxb = py[left.maxp] < py[right.maxp];
+            bool minb = py[left.minp] < py[right.minp];
+            result[maxb ? left.maxp : right.maxp] = 1 << depth;
+            result[minb ? right.minp : left.minp] = 1 << depth;
+            return new reduce_Entry(left.begin, right.end, maxb ? right.maxp : left.maxp, minb ? left.minp : right.minp);
         }
 
         //public static List<DataPoint> getStripData(int type = 1, double d = 1, double ef = 1, double threshold = 0)

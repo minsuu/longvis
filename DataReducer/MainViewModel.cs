@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Timers;
 using System.Windows.Media;
+using System.Windows;
+using CsvHelper;
 
 namespace DataReducer
 {
@@ -24,14 +25,7 @@ namespace DataReducer
 
         public MainViewModel()
         {
-            Tables = new ObservableCollection<string>();
-            /*
-                        timer.Interval = 500;
-                        timer.Elapsed += new ElapsedEventHandler((a,b) => Log_update());
-            */
-            nameSourceCol.Add(new nameSource { oldname = "1", newname = "2", isTimestamp = true });
         }
-
 
         /* notify change variables!! */
 
@@ -89,33 +83,48 @@ namespace DataReducer
         /* ------------------------ */
 
 
-        CSVParser currentCSVParser;
+        CSVParser currentCSV;
 
+        public int data_len
+        {
+            get
+            {
+                return currentCSV.raw_len;
+            }
+        }
         public void openFile(string path, string name)
         {
             // use name as default table name
             name = name.Split('.')[0];
             tableName = name;
-            currentCSVParser = new CSVParser(path);
+            currentCSV = new CSVParser(path);
             nameSourceCol.Clear();
-            foreach(var s in currentCSVParser.headers)
+            bool fst = true;
+            foreach(var s in currentCSV.headers)
             {
-                nameSourceCol.Add(new nameSource() { oldname = s, newname = s, isTimestamp = false });
+                nameSourceCol.Add(new nameSource() { oldname = s, newname = s, isTimestamp = fst });
+                fst = false;
             }
         }
 
-        private DBInterface db = new DBInterface();
+        public DBInterface db = new DBInterface();
         public void processFile()
         {
-            d_process_file work = processFile_async;
-            work.BeginInvoke(null, null);
+            Task<int> task = new Task<int>(processFile_async);
+            task.ContinueWith(processFile_Exception, TaskContinuationOptions.OnlyOnFaulted);
+            task.Start();
         }
 
-        private delegate void d_process_file();
-        private void processFile_async()
+        private void processFile_Exception(Task<int> task)
         {
-            // insert currentCSVParser's data into table named 'tableName'
+            MessageBox.Show(task.Exception.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Stop);
+        }
 
+        public int processFile_step;
+        private int processFile_async()
+        {
+            processFile_step = 0;
+            // insert currentCSVParser's data into table named 'tableName'
             step1_col = Brushes.Red;
             string[] newname = new string[nameSourceCol.Count];
             bool[] is_time = new bool[nameSourceCol.Count];
@@ -124,72 +133,68 @@ namespace DataReducer
                 newname[i] = nameSourceCol[i].newname;
                 is_time[i] = nameSourceCol[i].isTimestamp;
             }
-            currentCSVParser.open(nameSourceCol.ToArray());
+            currentCSV.open(nameSourceCol.ToArray());
             for(int i = 0; i < 10; i++)
             {
-                Debug.Print(currentCSVParser.rawdata["date_time"][i].ToString());
+                Debug.Print(currentCSV.rawdata["date_time"][i].ToString());
             }
             step1_col = Brushes.LightSeaGreen;
 
+            processFile_step++;
             step2_col = Brushes.Red;
-            step2_col = Brushes.LightSeaGreen;
-            
-        }
-
-        // create table!!
-        /*
-        public string createTable(string tableName, CSVParser csv)
-        {
-            StringBuilder q = new StringBuilder(string.Format(@"CREATE TABLE `{0}`(", tableName));
-            q.Append(Env.dbTableScheme);
-            foreach(string h in csv.headers)
+            List<long[]> results = new List<long[]>();
+            foreach(string s in currentCSV.raw_dataheader)
             {
-                q.Append(h + " DOUBLE, ");
+                long[] result;
+                Reducer.reduce_MinMax(currentCSV.rawdata[currentCSV.raw_timestamp], currentCSV.rawdata[s], out result);
+                results.Add(result);
             }
-            q.Remove(q.Length - 2, 2);
-            q.Append(")");
-            execute(q.ToString());
-            return q.ToString();
-        }
-/*
-        Stopwatch sw = new Stopwatch();
-        Timer timer = new Timer();
-        private string _log_past;
-        public void Log(string s)
-        {
-            _log_past += s + "\n";
-            Logger = _log_past;
+            step2_col = Brushes.LightSeaGreen;
+
+            processFile_step++;
+            step3_col = Brushes.Red;
+
+            // table creation
+            StringBuilder query = new StringBuilder(string.Format("CREATE TABLE {0} ({1}", tableName, Env.dbTableScheme));
+            for(int i=0; i<currentCSV.raw_dataheader.Count; i++)
+            {
+                query.AppendFormat(Env.dbTableAppend, i);
+            }
+            query.Remove(query.Length - 2, 2);
+            query.Append(")");
+            db.execute(query.ToString());
+
+            // data insert
+            List<List<double>> datalist = new List<List<double>>();
+            foreach(string s in currentCSV.raw_dataheader)
+            {
+                datalist.Add(currentCSV.rawdata[s]);
+            }
+            db.insert(tableName, currentCSV.rawdata[currentCSV.raw_timestamp], datalist, results);
+            step3_col = Brushes.LightSeaGreen;
+
+            /*
+            dbBaseScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                           "name VARCHAR(50) NOT NULL UNIQUE, " +
+                           "summary TINYTEXT, " +
+                           "algo TINYTEXT, " +
+                           "created DATETIME, " +
+                           "accessed DATETIME, " +
+                           "sensor TINYINT NOT NULL, " +
+                           "sensornames VARCHAR(255)";
+             */
+            // check info table exists.. & update info
+            if(!db.table_exists(Env.dbBaseName))
+                db.execute(string.Format("CREATE TABLE {0} ({1})", Env.dbBaseName, Env.dbBaseScheme));
+
+            string nowDate = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+            db.insert(Env.dbBaseName, DBNull.Value, tableName, "default", "min-max", nowDate, nowDate,
+                currentCSV.raw_dataheader.Count, string.Join("\n", currentCSV.raw_dataheader));
+            processFile_step++;
+
+            return 1;
         }
 
-        public void Log_begin(string s, bool t = true)
-        {
-            sw.Restart();
-            if(t)
-                timer.Start();
-            _log_past += s;
-            Logger = _log_past;
-        }
-
-        public void Log_update(int per)
-        {
-            Logger = _log_past + " (" + per + "%)";
-        }
-
-        public void Log_update()
-        {
-            _log_past += ".";
-            Logger = _log_past;
-        }
-
-        public void Log_end()
-        {
-            timer.Stop();
-            sw.Stop();
-            _log_past += "\nCompleted! Time elapsed : " + sw.ElapsedMilliseconds/1000.0 + "s\n";
-            Logger = _log_past;
-        }
-*/
-        public ObservableCollection<string> Tables { get; set;}
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

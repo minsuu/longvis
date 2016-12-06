@@ -3,31 +3,160 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:DataVisualizer"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         mc:Ignorable="d"
         Title="DataVisualizer" Height="500" Width="1000">
-    <Window.DataContext>
-        <local:MainViewModel/>
-    </Window.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Open" ItemsSource="{Binding MenuCollection}">
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem">
-                        <Setter Property="Header" Value="{Binding Name}"/>
-                        <Setter Property="Command" Value="{Binding Command}"/>
-                        <Setter Property="CommandParameter" Value="{Binding Name}"/>
+    <Window.Resources>
+        <Color x:Key="ColorA">#FCFFF5</Color>
+        <Color x:Key="ColorB">#D1DBBD</Color>
+        <Color x:Key="ColorC">#91AA9D</Color>
+        <Color x:Key="ColorD">#3E606F</Color>
+        <Color x:Key="ColorE">#193441</Color>
+        <SolidColorBrush x:Key="TitleFillBrush" Color="{DynamicResource ColorE}"/>
+        <sys:Double x:Key="sepHeight">20</sys:Double>
+        <sys:Double x:Key="labWidth">150</sys:Double>
+    </Window.Resources>
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+ 
+    <DockPanel LastChildFill="True">
+        <Border Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="85" x:Name="titlebar">
+            <StackPanel>
+                <DockPanel>
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor,AncestorType=Window},FallbackValue=Title}" 
+                           Margin="15,13,0,0"
+                           VerticalAlignment="Center" Foreground="White"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Name="border">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Opacity" Value="0.75" />
+                                                    <Setter Property="BorderBrush" Value="Gainsboro" />
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="false">
+                                                    <Setter Property="Opacity" Value="0.25" />
+                                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+                                <Setter Property="Margin" Value="4"/>
+                                <Setter Property="Width" Value="15"/>
+                                <Setter Property="Height" Value="15"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <Button x:Name="buttonWindowMin" Click="buttonWindowMin_Click" >
+                            <svgc:SvgViewbox Source="/Resources/window_min.svg"/>
+                        </Button>
+                        <Button x:Name="buttonWindowMax" Click="buttonWindowMax_Click">
+                            <svgc:SvgViewbox Source="/Resources/window_max.svg"/>
+                        </Button>
+                        <Button x:Name="buttonWindowClose" Click="buttonWindowClose_Click">
+                            <svgc:SvgViewbox Source="/Resources/window_close.svg"/>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+                <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Name="border">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.75" />
+                                                <Setter Property="BorderBrush" Value="Gainsboro" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="false">
+                                                <Setter Property="Opacity" Value="0.25" />
+                                                <Setter Property="BorderBrush" Value="Transparent" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+                            <Setter Property="Margin" Value="8"/>
+                            <Setter Property="Width" Value="35"/>
+                            <Setter Property="Height" Value="35"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="{DynamicResource TitleFillBrush}" BorderThickness="5">
+            <TabControl Name="mainTabControl" BorderThickness="0">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="FontFamily" Value="Lucida Sans"/>
                     </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-        </Menu>
-
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <TextBlock x:Name="f_status" Text="{Binding Logger}"/>
-            </StatusBarItem>
-        </StatusBar>
-        <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
+                </TabControl.Resources>
+                <TabItem Header="tabGraph">
+                    <DockPanel>
+                        <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
+                        <StatusBar DockPanel.Dock="Bottom">
+                            <StatusBarItem>
+                                <TextBlock x:Name="f_status" Text="{Binding Logger}"/>
+                            </StatusBarItem>
+                        </StatusBar>    
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="tabOpen">
+                    <ListView>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <TextBlock Text="Name"/>
+                                    <TextBlock Text="Accessed"/>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </TabItem>
+                <TabItem Header="tabSetting">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">DB Address</Label>
+                            <TextBox x:Name="textDBAddress" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">User ID</Label>
+                            <TextBox x:Name="textUserID" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">User Password</Label>
+                            <PasswordBox x:Name="textUserPass" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <Button x:Name="SettingSaveButton" Click="SettingSaveButton_Click">SAVE</Button>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </Border>
     </DockPanel>
 </Window>

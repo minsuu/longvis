@@ -12,10 +12,12 @@ namespace DataReducer
 {
     public class CSVParser
     {
+        public int raw_len { get; set; }
+        public List<string> raw_dataheader { get; set; }
+        public string raw_timestamp { get; set; }
         public Dictionary<string, List<double>> rawdata { get; set; } = new Dictionary<string, List<double>>();
 
         public string[] headers { get; set; }
-        public int raw_len { get; set; }
 
         // woking progress. 0~100.
         public double workProgress { get; set; }
@@ -38,11 +40,18 @@ namespace DataReducer
             {
                 var csv = new CsvReader(textReader);
                 csv.Read();
+
+                raw_dataheader = new List<string>();
                 for(int i=0;i<namesource.Length;i++)
                 {
                     rawdata[namesource[i].newname] = new List<double>();
+                    if (namesource[i].isTimestamp)
+                        raw_timestamp = namesource[i].newname;
+                    else
+                        raw_dataheader.Add(namesource[i].newname);
                 }
 
+                int len = 0;
                 while (csv.Read())
                 {
                     for(int i = 0; i < namesource.Length; i++)
@@ -50,7 +59,7 @@ namespace DataReducer
                         double ins = 0;
                         if (namesource[i].isTimestamp)
                         {
-                            string time = csv.GetField<string>(headers[i]);
+                            string time = csv.GetField<string>(namesource[i].oldname);
                             DateTime tmp;
                             if(DateTime.TryParse(time, out tmp) ||
                                 DateTime.TryParseExact(time, Env.dateFormats.ToArray(), null, System.Globalization.DateTimeStyles.NoCurrentDateDefault, out tmp))
@@ -66,7 +75,9 @@ namespace DataReducer
                         }
                         rawdata[namesource[i].newname].Add(ins);
                     }
+                    len++;
                 }
+                raw_len = len;
             }
             return true;
         }

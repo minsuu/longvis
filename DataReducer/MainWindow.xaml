@@ -100,14 +100,14 @@
                             <Setter Property="BorderThickness" Value="0"/>
                         </Style>
                     </StackPanel.Resources>
-                    <Button Click="Button_Click_1">
-                        <svgc:SvgViewbox Source="/Resources/new-on.svg"/>
+                    <Button x:Name="TabInsertButton" Click="TabInsertButton_Click">
+                        <svgc:SvgViewbox x:Name="TabInsertButtonSvg" Source="/Resources/new-on.svg"/>
                     </Button>
-                    <Button>
-                        <svgc:SvgViewbox Source="/Resources/list-off.svg"/>
+                    <Button x:Name="TabListButton" Click="TabListButton_Click">
+                        <svgc:SvgViewbox x:Name="TabListButtonSvg" Source="/Resources/list-off.svg"/>
                     </Button>
-                    <Button>
-                        <svgc:SvgViewbox Source="/Resources/menu-off.svg"/>
+                    <Button x:Name="TabSettingButton" Click="TabSettingButton_Click">
+                        <svgc:SvgViewbox x:Name="TabSettingButtonSvg" Source="/Resources/menu-off.svg"/>
                     </Button>
                 </StackPanel>
             </StackPanel>
@@ -174,7 +174,7 @@
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
                                 <Label Width="{DynamicResource labWidth}">Table Name</Label>
-                                <TextBox Width="200" Text="{Binding tableName}"/>
+                                <TextBox x:Name="textTableName" Width="200" Text="{Binding tableName}"/>
                             </StackPanel>
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top">
@@ -239,6 +239,29 @@
                             <Label x:Name="labelStage3" Foreground="{Binding Path=step3_col}">Creating table and inserting data...</Label>
                         </StackPanel>
                     </Grid>
+                </TabItem>
+                <TabItem Header="tabList">
+                    <Label>Under Construction..</Label>
+                </TabItem>
+                <TabItem Header="tabSetting">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">DB Address</Label>
+                            <TextBox x:Name="textDBAddress" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">User ID</Label>
+                            <TextBox x:Name="textUserID" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="{DynamicResource labWidth}">User Password</Label>
+                            <PasswordBox x:Name="textUserPass" Width="200"/>
+                        </StackPanel>
+                        <Separator Opacity="0" Height="{DynamicResource sepHeight}" DockPanel.Dock="Top"/>
+                        <Button x:Name="SettingSaveButton" Click="SettingSaveButton_Click">SAVE</Button>
+                    </StackPanel>
                 </TabItem>
             </TabControl>
         </Border>

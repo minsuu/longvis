@@ -16,52 +16,29 @@ using System.Data;
 
 namespace DataVisualizer
 {
-    public class BindableMenuItem
+    /*
+        dbBaseScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                           "name VARCHAR(50) NOT NULL UNIQUE, " +
+                           "summary TINYTEXT, " +
+                           "algo TINYTEXT, " +
+                           "created DATETIME, " +
+                           "accessed DATETIME, " +
+                           "sensor TINYINT NOT NULL, " +
+                           "sensornames VARCHAR(255)";
+    */
+            
+    public class tableInfo
     {
-        public BindableMenuItem(string _name, BindableMenuItem[] _child, ICommand _command)
-        {
-            Name = _name;
-            Children = _child;
-            Command = _command;
-        }
-        public string Name { get; set; }
-        public BindableMenuItem[] Children { get; set; }
-        public ICommand Command { get; set; }
-    }
-
-    public class RelayCommand : ICommand
-    {
-        private Action<object> execute;
-        private Func<object, bool> canExecute;
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
-        {
-            this.execute = execute;
-            this.canExecute = canExecute;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return canExecute == null || canExecute(parameter);
-        }
-
-        public void Execute(object parameter)
-        {
-            execute(parameter);
-        }
+        public int id, sensor;
+        public string name, summary, algo, sensornames;
+        public DateTime created, accessed;
     }
 
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<BindableMenuItem> MenuCollection { get; set; } = new ObservableCollection<BindableMenuItem>();
-        public RelayCommand opentable { get; set; }
+
+        /* Bound Properties! ! ! */
         private string _Logger;
         public string Logger
         {
@@ -72,19 +49,25 @@ namespace DataVisualizer
                 OnPropertyChanged("Logger");
             }
         }
+
+        private ObservableCollection<tableInfo> _tableInfoList = new ObservableCollection<tableInfo>();
+        public ObservableCollection<tableInfo> tableInfoList
+        {
+            get { return _tableInfoList; }
+            set
+            {
+                _tableInfoList = value;
+                OnPropertyChanged("tableInfoList");
+            }
+        }
+        /* ENDED */
+        
         private DBInterface db = new DBInterface();
         public PlotModel Plot { get; set; } = new PlotModel();
         public int Plot_width { get; set; } = 0;
 
         public MainViewModel()
         {
-            opentable = new RelayCommand(o => Open_clicked(o.ToString()));
-            timer.Interval = 500;
-            timer.Elapsed += new ElapsedEventHandler((a, b) => Log_update());
-            foreach (string t in db.tables())
-            {
-                MenuCollection.Add(new BindableMenuItem(t, null, opentable));
-            }
             Plot.LegendTitle = "Legend";
         }
 
@@ -92,15 +75,14 @@ namespace DataVisualizer
         public CacheController cc;
         public void cache_update()
         {
-            Log_begin("loading " + cc.name, false);
             cc.fill_data(cc.data_l, cc.data_r, Plot_width);
             Plot.Series.Clear();
             foreach (var a in cc.line)
                 Plot.Series.Add(a);
             Plot.InvalidatePlot(true);
-            Log_end();
         }
 
+        /*
         public void Open_clicked(string name)
         {
             Plot.Title = name;
@@ -137,6 +119,7 @@ namespace DataVisualizer
             sw.Stop();
             Logger = "Completed! Time elapsed : " + sw.ElapsedMilliseconds / 1000.0 + "s";
         }
+        */
 
         protected void OnPropertyChanged(string name)
         {

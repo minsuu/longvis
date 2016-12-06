@@ -13,6 +13,8 @@ namespace DataReducer
     {
         static Env()
         {
+            appPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            
             dateFormats = new List<string>();
             dateFormats.Add("yyyyMMdd HH:mm:ss.fff");
             dateFormats.Add("HH:mm:ss.fff");
@@ -47,10 +49,11 @@ namespace DataReducer
                            "sensor TINYINT NOT NULL, " +
                            "sensornames VARCHAR(255)";
             dbTableScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                            "timestamp BIGINT unsigned, ";
-            dbTableAppend = "S{0} DOUBLE, Q{0} BIGINT";
+                            "TS BIGINT unsigned, ";
+            dbTableAppend = "S{0} DOUBLE, Q{0} BIGINT, ";
         }
 
+        public static string appPath { get; set;}
         public static string dbServerAddress { get; set; }
         public static string dbUid { get; set; }
         public static string dbPassword { get; set; }

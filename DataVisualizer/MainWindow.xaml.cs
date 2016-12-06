@@ -13,13 +13,28 @@ namespace DataVisualizer
         public MainWindow()
         {
             InitializeComponent();
-            mv = this.DataContext as MainViewModel;
+            mv = DataContext as MainViewModel;
         }
 
         private void PlotView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             FrameworkElement s = sender as FrameworkElement;
-            mv.Plot_width = (int)s.ActualWidth;
+            // mv.Plot_width = (int)s.ActualWidth;
+        }
+
+        private void buttonWindowMin_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void buttonWindowMax_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void buttonWindowClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
