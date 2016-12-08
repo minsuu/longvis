@@ -50,7 +50,7 @@ namespace DataReducer
                            "sensornames VARCHAR(255)";
             dbTableScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                             "TS BIGINT unsigned, ";
-            dbTableAppend = "S{0} DOUBLE, Q{0} BIGINT, ";
+            dbTableAppend = "S{0} DOUBLE NOT NULL, Q{0} BIGINT NOT NULL, INDEX(S{0}), INDEX(Q{0}), ";
         }
 
         public static string appPath { get; set;}

@@ -31,68 +31,13 @@ namespace DataReducer
         private int tab2state = 3; // 3
         private int tab3state = 4; // 4
 
-        /*
-        public void Table_reload(IAsyncResult res = null)
-        {
-            this.Dispatcher.Invoke((Action)(() =>
-            {
-                mv.Tables.Clear();
-                foreach(String t in db.tables())
-                {
-                    mv.Tables.Add(t);
-                }
-            }));
-            
-        }*/
-
         public MainWindow()
         {
             InitializeComponent();
             mv = DataContext as MainViewModel;
-        }
-
-        private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = !onload;
-        }
-
-        private void Open_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            
-        }
-
-        /*
-        private void csv_open(string path, string name)
-        {
-            onload = true;
-            csvparser.Open();
-
-            name = name.Split('.')[0];
-            string s = db.createTable(name, csvparser);
-            mv.Log("Created table with " + s);
-
-            using (var timer = new System.Timers.Timer())
-            {
-                timer.Interval = 500;
-                timer.Elapsed += new System.Timers.ElapsedEventHandler((a, b) => mv.Log_update((int)(db.ins_now * 100.0 / db.ins_max)));
-                timer.Start();
-                mv.Log_begin("Inserting data", false);
-                db.insert(name, csvparser);
-                mv.Log_end();
-                timer.Stop();
-            }
-            onload = false;
-        }
-        */
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-//            db.execute("DROP TABLE " + f_tablelist.SelectedItem);
-//            db.execute("DELETE FROM sqlite_sequence where name = '" + f_tablelist.SelectedItem + "'");
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
+            TabInsertButtonSvg.Opacity = 1;
+            TabListButtonSvg.Opacity = 0.5;
+            TabSettingButtonSvg.Opacity = 0.5;
         }
 
         private void buttonWindowMin_Click(object sender, RoutedEventArgs e)
@@ -124,10 +69,6 @@ namespace DataReducer
                 Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 1));
                 currParser = new CSVParser(dlg.FileName);
                 mv.openFile(dlg.FileName, dlg.SafeFileName);
-                /*
-                d_csv_open work = csv_open;
-                work.BeginInvoke(dlg.FileName, dlg.SafeFileName, Table_reload, null);
-                */
             }
         }
 
@@ -138,7 +79,6 @@ namespace DataReducer
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 0));
         }
 
-        Timer timer;
         private void tabInfoSubmitButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -163,13 +103,26 @@ namespace DataReducer
             Env.dbServerAddress = textDBAddress.Text;
             Env.dbUid = textUserID.Text;
             Env.dbPassword = textUserPass.Password;
+            try
+            {
+                bool simpletest = mv.db.table_exists(Env.dbBaseName);
+            }catch(Exception err)
+            {
+                MessageBox.Show(err.Message, "에러!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         private void TabSettingButton_Click(object sender, RoutedEventArgs e)
         {
+            TabInsertButtonSvg.Opacity = 0.5;
+            TabListButtonSvg.Opacity = 0.5;
+            TabSettingButtonSvg.Opacity = 1;
+            /*
             TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-off.svg");
             TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-off.svg");
             TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-on.svg");
+            */
             textDBAddress.Text = Env.dbServerAddress;
             textUserID.Text = Env.dbUid;
             textUserPass.Password = Env.dbPassword;
@@ -178,17 +131,34 @@ namespace DataReducer
 
         private void TabListButton_Click(object sender, RoutedEventArgs e)
         {
+            TabInsertButtonSvg.Opacity = 0.5;
+            TabListButtonSvg.Opacity = 1;
+            TabSettingButtonSvg.Opacity = 0.5;
+            /*
             TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-off.svg");
             TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-on.svg");
             TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-off.svg");
+            */
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab2state));
         }
 
         private void TabInsertButton_Click(object sender, RoutedEventArgs e)
         {
+            TabInsertButtonSvg.Opacity = 1;
+            TabListButtonSvg.Opacity = 0.5;
+            TabSettingButtonSvg.Opacity = 0.5;
+
+            /*  
             TabInsertButtonSvg.Source = new Uri("pack://application:,,,/Resources/new-on.svg");
             TabListButtonSvg.Source = new Uri("pack://application:,,,/Resources/list-off.svg");
             TabSettingButtonSvg.Source = new Uri("pack://application:,,,/Resources/menu-off.svg");
+            */
+            Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab1state));
+        }
+
+        private void tabProgressBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            tab1state = 0;
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = tab1state));
         }
     }

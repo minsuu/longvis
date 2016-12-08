@@ -136,9 +136,21 @@
             </summary>
             <value>The maximum Y.</value>
         </member>
+        <member name="P:OxyPlot.Annotations.RectangleAnnotation.ClipByXAxis">
+            <summary>
+            Gets or sets a value indicating whether to clip the annotation by the X axis range.
+            </summary>
+            <value><c>true</c> if clipping by the X axis is enabled; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:OxyPlot.Annotations.RectangleAnnotation.ClipByYAxis">
+            <summary>
+            Gets or sets a value indicating whether to clip the annotation by the Y axis range.
+            </summary>
+            <value><c>true</c> if clipping by the Y axis is enabled; otherwise, <c>false</c>.</value>
+        </member>
         <member name="M:OxyPlot.Annotations.RectangleAnnotation.Render(OxyPlot.IRenderContext)">
             <summary>
-            Renders the polygon annotation.
+            Renders the rectangle annotation.
             </summary>
             <param name="rc">The render context.</param>
         </member>
@@ -1036,11 +1048,11 @@
             </summary>
             <value>The minimum length of the segment.</value>
         </member>
-        <member name="P:OxyPlot.Annotations.PolylineAnnotation.Smooth">
+        <member name="P:OxyPlot.Annotations.PolylineAnnotation.InterpolationAlgorithm">
             <summary>
-            Gets or sets a value indicating whether this <see cref = "T:OxyPlot.Annotations.PolylineAnnotation" /> is smooth.
+            Gets or sets the interpolation algorithm.
             </summary>
-            <value><c>true</c> if smooth; otherwise, <c>false</c>.</value>
+            <value>An interpolation algorithm.</value>
         </member>
         <member name="M:OxyPlot.Annotations.PolylineAnnotation.GetScreenPoints">
             <summary>
@@ -4355,6 +4367,31 @@
             <param name="plotView">The plot view.</param>
             <remarks>Only one plot view can be attached to the plot model.
             The plot model contains data (e.g. axis scaling) that is only relevant to the current plot view.</remarks>
+        </member>
+        <member name="T:OxyPlot.InterpolationAlgorithms">
+            <summary>
+            Implements a set of predefined interpolation algorithms.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.InterpolationAlgorithms.CanonicalSpline">
+            <summary>
+            Canonical spline, also known as Cardinal spline.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.InterpolationAlgorithms.CatmullRomSpline">
+            <summary>
+            Centripetal Catmull–Rom spline.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.InterpolationAlgorithms.UniformCatmullRomSpline">
+            <summary>
+            Uniform Catmull–Rom spline.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.InterpolationAlgorithms.ChordalCatmullRomSpline">
+            <summary>
+            Chordal Catmull–Rom spline.
+            </summary>
         </member>
         <member name="T:OxyPlot.OxySizeExtensions">
             <summary>
@@ -10279,11 +10316,11 @@
             </summary>
             <value>The minimum length of the segment.</value>
         </member>
-        <member name="P:OxyPlot.Series.LineSeries.Smooth">
+        <member name="P:OxyPlot.Series.LineSeries.InterpolationAlgorithm">
             <summary>
-            Gets or sets a value indicating whether this <see cref = "T:OxyPlot.Series.DataPointSeries" /> is smooth.
+            Gets or sets a type of interpolation algorithm used for smoothing this <see cref = "T:OxyPlot.Series.DataPointSeries" />.
             </summary>
-            <value><c>true</c> if smooth; otherwise, <c>false</c>.</value>
+            <value>Type of interpolation algorithm.</value>
         </member>
         <member name="P:OxyPlot.Series.LineSeries.StrokeThickness">
             <summary>
@@ -10390,7 +10427,7 @@
         </member>
         <member name="M:OxyPlot.Series.LineSeries.RenderLineAndMarkers(OxyPlot.IRenderContext,OxyPlot.OxyRect,System.Collections.Generic.IList{OxyPlot.ScreenPoint})">
             <summary>
-            Renders the transformed points as a line (smoothed if <see cref="P:OxyPlot.Series.LineSeries.Smooth"/> is <c>true</c>) and markers (if <see cref="P:OxyPlot.Series.LineSeries.MarkerType"/> is not <c>None</c>).
+            Renders the transformed points as a line (smoothed if <see cref="P:OxyPlot.Series.LineSeries.InterpolationAlgorithm"/> isn’t <c>null</c>) and markers (if <see cref="P:OxyPlot.Series.LineSeries.MarkerType"/> is not <c>None</c>).
             </summary>
             <param name="rc">The render context.</param>
             <param name="clippingRect">The clipping rectangle.</param>
@@ -11480,6 +11517,12 @@
             Initializes a new instance of the <see cref="T:OxyPlot.TouchManipulator" /> class.
             </summary>
             <param name="plotView">The plot view.</param>
+        </member>
+        <member name="P:OxyPlot.TouchManipulator.SetHandledForPanOrZoom">
+            <summary>
+            Gets or sets a value indicating whether <c>e.Handled</c> should be set to <c>true</c>
+            in case pan or zoom is enabled.
+            </summary>
         </member>
         <member name="P:OxyPlot.TouchManipulator.IsPanEnabled">
             <summary>
@@ -12634,14 +12677,43 @@
             <param name="points">The points.</param>
             <returns>The centroid.</returns>
         </member>
-        <member name="T:OxyPlot.CanonicalSplineHelper">
+        <member name="T:OxyPlot.CanonicalSpline">
             <summary>
             Provides functionality to interpolate a list of points by a canonical spline.
             </summary>
             <remarks>CanonicalSplineHelper.cs (c) 2009 by Charles Petzold (WPF and Silverlight)
             See also <a href="http://www.charlespetzold.com/blog/2009/01/Canonical-Splines-in-WPF-and-Silverlight.html">blog post</a>.</remarks>
         </member>
-        <member name="M:OxyPlot.CanonicalSplineHelper.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Double,System.Collections.Generic.IList{System.Double},System.Boolean,System.Double)">
+        <member name="P:OxyPlot.CanonicalSpline.Tension">
+            <summary>
+            The tension.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.CanonicalSpline.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref = "T:OxyPlot.CanonicalSpline" /> class.
+            </summary>
+            <param name="tension">The tension.</param>
+        </member>
+        <member name="M:OxyPlot.CanonicalSpline.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of data points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of data points.</returns>
+        </member>
+        <member name="M:OxyPlot.CanonicalSpline.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of screen points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of screen points.</returns>
+        </member>
+        <member name="M:OxyPlot.CanonicalSpline.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Double,System.Collections.Generic.IList{System.Double},System.Boolean,System.Double)">
             <summary>
             Creates a spline of data points.
             </summary>
@@ -12652,7 +12724,7 @@
             <param name="tolerance">The tolerance.</param>
             <returns>A list of data points.</returns>
         </member>
-        <member name="M:OxyPlot.CanonicalSplineHelper.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Double,System.Collections.Generic.IList{System.Double},System.Boolean,System.Double)">
+        <member name="M:OxyPlot.CanonicalSpline.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Double,System.Collections.Generic.IList{System.Double},System.Boolean,System.Double)">
             <summary>
             Creates a spline of screen points.
             </summary>
@@ -12663,7 +12735,7 @@
             <param name="tolerance">The tolerance.</param>
             <returns>A list of screen points.</returns>
         </member>
-        <member name="M:OxyPlot.CanonicalSplineHelper.Segment(System.Collections.Generic.IList{OxyPlot.ScreenPoint},OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,System.Double,System.Double,System.Double,System.Int32)">
+        <member name="M:OxyPlot.CanonicalSpline.Segment(System.Collections.Generic.IList{OxyPlot.ScreenPoint},OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,System.Double,System.Double,System.Double,System.Int32)">
             <summary>
             The segment.
             </summary>
@@ -15411,6 +15483,98 @@
             <param name="input">The input points.</param>
             <param name="dist">The interpolation distance.</param>
             <returns>The interpolated points.</returns>
+        </member>
+        <member name="T:OxyPlot.IInterpolationAlgorithm">
+            <summary>
+            Defines an interpolation algorithm.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.IInterpolationAlgorithm.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline from data points.
+            </summary>
+            <param name="points">Data points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>Spline.</returns>
+        </member>
+        <member name="M:OxyPlot.IInterpolationAlgorithm.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline from points in screen space.
+            </summary>
+            <param name="points">Resampled points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>Spline.</returns>
+        </member>
+        <member name="T:OxyPlot.CatmullRomSpline">
+            <summary>
+            Provides functionality to interpolate a list of points by a Centripetal Catmull–Rom spline.
+            </summary>
+            <remarks>Based on CanonicalSplineHelper.cs (c) 2009 by Charles Petzold (WPF and Silverlight)
+            See also <a href="http://www.charlespetzold.com/blog/2009/01/Canonical-Splines-in-WPF-and-Silverlight.html">blog post</a>.</remarks>
+        </member>
+        <member name="P:OxyPlot.CatmullRomSpline.Alpha">
+            <summary>
+            The alpha.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref = "T:OxyPlot.CatmullRomSpline" /> class.
+            </summary>
+            <param name="alpha">The alpha.</param>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of data points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of data points.</returns>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of screen points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of screen points.</returns>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.CreateSpline(System.Collections.Generic.List{OxyPlot.DataPoint},System.Double,System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of data points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="alpha">The alpha.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of data points.</returns>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.CreateSpline(System.Collections.Generic.IList{OxyPlot.ScreenPoint},System.Double,System.Boolean,System.Double)">
+            <summary>
+            Creates a spline of screen points.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="alpha">The alpha.</param>
+            <param name="isClosed">True if the spline is closed.</param>
+            <param name="tolerance">The tolerance.</param>
+            <returns>A list of screen points.</returns>
+        </member>
+        <member name="M:OxyPlot.CatmullRomSpline.Segment(System.Collections.Generic.IList{OxyPlot.ScreenPoint},OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,OxyPlot.ScreenPoint,System.Double,System.Double,System.Int32)">
+            <summary>
+            The segment.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="pt0">The pt 0.</param>
+            <param name="pt1">The pt 1.</param>
+            <param name="pt2">The pt 2.</param>
+            <param name="pt3">The pt 3.</param>
+            <param name="alpha">The alpha.</param>
+            <param name="tolerance">The tolerance.</param>
+            <param name="maxSegments">The maximum number of segments. Default is <c>1000</c>.</param>
         </member>
         <member name="T:OxyPlot.OxyKey">
             <summary>

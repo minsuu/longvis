@@ -161,7 +161,7 @@ namespace DataReducer
                 query.AppendFormat(Env.dbTableAppend, i);
             }
             query.Remove(query.Length - 2, 2);
-            query.Append(")");
+            query.Append(") ENGINE=MyISAM");
             db.execute(query.ToString());
 
             // data insert
@@ -185,7 +185,7 @@ namespace DataReducer
              */
             // check info table exists.. & update info
             if(!db.table_exists(Env.dbBaseName))
-                db.execute(string.Format("CREATE TABLE {0} ({1})", Env.dbBaseName, Env.dbBaseScheme));
+                db.execute(string.Format("CREATE TABLE {0} ({1}) ENGINE=MyISAM", Env.dbBaseName, Env.dbBaseScheme));
 
             string nowDate = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
             db.insert(Env.dbBaseName, DBNull.Value, tableName, "default", "min-max", nowDate, nowDate,

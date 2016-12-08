@@ -23,11 +23,11 @@
         <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <DockPanel LastChildFill="True">
-        <Border Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="85" x:Name="titlebar">
+        <Border BorderBrush="{DynamicResource TitleFillBrush}" Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="85" x:Name="titlebar" BorderThickness="5">
             <StackPanel>
                 <DockPanel>
                     <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor,AncestorType=Window},FallbackValue=Title}" 
-                           Margin="15,13,0,0"
+                           Margin="15,8,0,0"
                            VerticalAlignment="Center" Foreground="White"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
                         <StackPanel.Resources>
@@ -70,7 +70,7 @@
                         </Button>
                     </StackPanel>
                 </DockPanel>
-                <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                <StackPanel Margin="7,5,0,0" Orientation="Horizontal">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -82,7 +82,7 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Opacity" Value="0.75" />
+                                                <Setter Property="Opacity" Value="0.25" />
                                                 <Setter Property="BorderBrush" Value="Gainsboro" />
                                             </Trigger>
                                             <Trigger Property="IsEnabled" Value="false">
@@ -104,15 +104,15 @@
                         <svgc:SvgViewbox x:Name="TabInsertButtonSvg" Source="/Resources/new-on.svg"/>
                     </Button>
                     <Button x:Name="TabListButton" Click="TabListButton_Click">
-                        <svgc:SvgViewbox x:Name="TabListButtonSvg" Source="/Resources/list-off.svg"/>
+                        <svgc:SvgViewbox x:Name="TabListButtonSvg" Source="/Resources/list-on.svg"/>
                     </Button>
                     <Button x:Name="TabSettingButton" Click="TabSettingButton_Click">
-                        <svgc:SvgViewbox x:Name="TabSettingButtonSvg" Source="/Resources/menu-off.svg"/>
+                        <svgc:SvgViewbox x:Name="TabSettingButtonSvg" Source="/Resources/menu-on.svg"/>
                     </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
-        <Border BorderBrush="LightGray" BorderThickness="3">
+        <Border BorderBrush="{DynamicResource TitleFillBrush}" BorderThickness="5">
             <TabControl Name="mainTabControl" BorderThickness="0">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
@@ -227,7 +227,7 @@
                                     <Setter Property="BorderThickness" Value="0"/>
                                 </Style>
                             </DockPanel.Resources>
-                            <Button x:Name="tabProgressBackButton">
+                            <Button x:Name="tabProgressBackButton" Click="tabProgressBackButton_Click">
                                 <svgc:SvgViewbox Source="/Resources/arrow-left.svg"/>
                             </Button>
                         </DockPanel>

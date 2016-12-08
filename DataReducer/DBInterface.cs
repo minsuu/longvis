@@ -53,14 +53,11 @@ namespace DataReducer
                 }
                 throw;
             }
-
-            Debug.Print("returned conn");
             return conn;
         }
 
         public bool table_exists(string s)
         {
-            Debug.Print("table_exists!!");
             using (var res = getDataTable(string.Format(@"SHOW TABLES LIKE '{0}'", s)))
                 if (res?.Rows.Count == 0)
                     return false;
@@ -113,7 +110,6 @@ namespace DataReducer
         // retrieving data
         public DataTable getDataTable(string q)
         {
-            Debug.Print("execute calleD!!");
             DataTable dt = new DataTable();
             using (var conn = create_conn())
             using (MySqlCommand c = new MySqlCommand(q, conn))

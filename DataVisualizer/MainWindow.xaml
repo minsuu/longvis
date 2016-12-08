@@ -20,16 +20,19 @@
         <sys:Double x:Key="sepHeight">20</sys:Double>
         <sys:Double x:Key="labWidth">150</sys:Double>
     </Window.Resources>
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
- 
+
     <DockPanel LastChildFill="True">
-        <Border Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="85" x:Name="titlebar">
+        <Border BorderBrush="{DynamicResource TitleFillBrush}" Background="{DynamicResource TitleFillBrush}" DockPanel.Dock="Top" Height="85" x:Name="titlebar" BorderThickness="5">
             <StackPanel>
                 <DockPanel>
                     <TextBlock Text="{Binding Title, RelativeSource={RelativeSource FindAncestor,AncestorType=Window},FallbackValue=Title}" 
-                           Margin="15,13,0,0"
+                           Margin="15,8,0,0"
                            VerticalAlignment="Center" Foreground="White"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
                         <StackPanel.Resources>
@@ -72,7 +75,7 @@
                         </Button>
                     </StackPanel>
                 </DockPanel>
-                <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                <StackPanel Margin="7,5,0,0" Orientation="Horizontal">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -102,6 +105,15 @@
                             <Setter Property="BorderThickness" Value="0"/>
                         </Style>
                     </StackPanel.Resources>
+                    <Button x:Name="TabViewButton" Click="TabViewButton_Click">
+                        <svgc:SvgViewbox x:Name="TabViewButtonSvg"  Source="/Resources/viewtab.svg"/>
+                    </Button>
+                    <Button x:Name="TabListButton" Click="TabListButton_Click">
+                        <svgc:SvgViewbox x:Name="TabListButtonSvg" Source="/Resources/listtab.svg"/>
+                    </Button>
+                    <Button x:Name="TabSettingButton" Click="TabSettingButton_Click">
+                        <svgc:SvgViewbox x:Name="TabSettingButtonSvg"  Source="/Resources/settingtab.svg"/>
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -117,20 +129,27 @@
                 <TabItem Header="tabGraph">
                     <DockPanel>
                         <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
+                        <!--
                         <StatusBar DockPanel.Dock="Bottom">
                             <StatusBarItem>
                                 <TextBlock x:Name="f_status" Text="{Binding Logger}"/>
                             </StatusBarItem>
                         </StatusBar>    
+                        -->
                     </DockPanel>
                 </TabItem>
                 <TabItem Header="tabOpen">
-                    <ListView>
+                    <ListView x:Name="tableListView" ItemsSource="{Binding tableInfoList}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <EventSetter Event="MouseDoubleClick" Handler="tableListView_MouseDoubleClick"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <WrapPanel>
-                                    <TextBlock Text="Name"/>
-                                    <TextBlock Text="Accessed"/>
+                                <WrapPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding name}"/>
+                                    <TextBlock Text="{Binding accessed_rel}" FontSize="15"/>
                                 </WrapPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>

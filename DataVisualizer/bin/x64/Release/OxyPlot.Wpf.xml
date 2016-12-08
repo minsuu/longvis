@@ -568,9 +568,9 @@
             This is a WPF wrapper of OxyPlot.PolylineAnnotation
             </summary>
         </member>
-        <member name="F:OxyPlot.Wpf.PolylineAnnotation.SmoothProperty">
+        <member name="F:OxyPlot.Wpf.PolylineAnnotation.InterpolationAlgorithmProperty">
             <summary>
-            Identifies the <see cref="P:OxyPlot.Wpf.PolylineAnnotation.Smooth"/> dependency property.
+            Identifies the <see cref="P:OxyPlot.Wpf.PolylineAnnotation.InterpolationAlgorithm"/> dependency property.
             </summary>
         </member>
         <member name="F:OxyPlot.Wpf.PolylineAnnotation.MinimumSegmentLengthProperty">
@@ -607,11 +607,11 @@
             </summary>
             <value>The minimum length of the segment.</value>
         </member>
-        <member name="P:OxyPlot.Wpf.PolylineAnnotation.Smooth">
+        <member name="P:OxyPlot.Wpf.PolylineAnnotation.InterpolationAlgorithm">
             <summary>
-            Gets or sets a value indicating whether the polyline should be smoothed.
+            Gets or sets the interpolation algorithm.
             </summary>
-            <value><c>true</c> if smooth; otherwise, <c>false</c>.</value>
+            <value>Interpolation algorithm.</value>
         </member>
         <member name="M:OxyPlot.Wpf.PolylineAnnotation.CreateModel">
             <summary>
@@ -5787,9 +5787,9 @@
             Identifies the <see cref="P:OxyPlot.Wpf.LineSeries.MinimumSegmentLength"/> dependency property.
             </summary>
         </member>
-        <member name="F:OxyPlot.Wpf.LineSeries.SmoothProperty">
+        <member name="F:OxyPlot.Wpf.LineSeries.InterpolationAlgorithmProperty">
             <summary>
-            Identifies the <see cref="P:OxyPlot.Wpf.LineSeries.Smooth"/> dependency property.
+            Identifies the <see cref="P:OxyPlot.Wpf.LineSeries.InterpolationAlgorithm"/> dependency property.
             </summary>
         </member>
         <member name="F:OxyPlot.Wpf.LineSeries.StrokeThicknessProperty">
@@ -5903,11 +5903,11 @@
             Gets or sets MinimumSegmentLength.
             </summary>
         </member>
-        <member name="P:OxyPlot.Wpf.LineSeries.Smooth">
+        <member name="P:OxyPlot.Wpf.LineSeries.InterpolationAlgorithm">
             <summary>
-            Gets or sets a value indicating whether this <see cref="T:OxyPlot.Wpf.DataPointSeries" /> is smooth.
+            Gets or sets a value the interpolation algorithm.
             </summary>
-            <value><c>true</c> if smooth; otherwise, <c>false</c> .</value>
+            <value>Interpolation algorithm.</value>
         </member>
         <member name="P:OxyPlot.Wpf.LineSeries.StrokeThickness">
             <summary>

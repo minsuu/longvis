@@ -40,6 +40,7 @@ namespace DataVisualizer
         private DBInterface db;
         public string name;
 
+        /*
         public CacheController(DBInterface _db, string _name)
         {
             db = _db; name = _name;
@@ -61,6 +62,7 @@ namespace DataVisualizer
             cl = db.GetDataTable("SELECT MAX(id) FROM " + name);
             data_r = Convert.ToInt32(cl.Rows[0].ItemArray[0]);
         }
+        */
 
         /*
         public void open_table(string name)
@@ -82,6 +84,7 @@ namespace DataVisualizer
         }
         */
 
+        /*
         public void fill_data(int l, int r, int w)
         {
             string a = "SELECT id, " + col_str + " FROM " + name +
@@ -106,5 +109,6 @@ namespace DataVisualizer
                 }
             }
         }
+        */
     }
 }
