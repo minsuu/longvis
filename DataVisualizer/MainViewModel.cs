@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 using CsvHelper;
 using System.Windows.Input;
@@ -91,6 +92,19 @@ namespace DataVisualizer
 
     public class MainViewModel : INotifyPropertyChanged
     {
+        private static MainViewModel instance;
+        public static MainViewModel Instance
+        {
+          get 
+          {
+             if (instance == null)
+             {
+                instance = new MainViewModel();
+             }
+             return instance;
+          }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         /* Bound Properties! ! ! */
@@ -163,18 +177,42 @@ namespace DataVisualizer
         public void fillPlot(string table, string[] headers)
         {
             Plot.Series.Clear();
+            Plot.Axes.Clear();
+
+            Plot.Axes.Add(new DateTimeAxis
+            {
+                StringFormat = "mm:ss.fff",
+                Position = AxisPosition.Bottom,
+                AbsoluteMinimum = DateTimeAxis.ToDouble(DateTime.FromBinary(0))
+            });
+
+            OxyPalette myPallete = OxyPalettes.Hot64;
             int i = 0;
             foreach(string header in headers)
             {
                 LineSeries a = new LineSeries();
+                a.Color = myPallete.Colors[i];
+                if (i % 2 == 0)
+                    a.StrokeThickness = 5;
+                Plot.Axes.Add(new LinearAxis
+                {
+                    Key = header,
+                    Position = ((i % 2==0)? AxisPosition.Left : AxisPosition.Right),
+                    AxisDistance = (i/2)*30,                    
+                    Angle = 90,
+                    TicklineColor = myPallete.Colors[i],
+                });
+                a.YAxisKey = header;
                 a.Title = header;
                 string s = string.Format("SELECT TS, S{1} FROM {0} WHERE Q{1} <= 2048 ORDER BY TS", table, i);
                 DataTable r = db.getDataTable(s);
                 foreach(var row in r.AsEnumerable())
                 {
-                    a.Points.Add(new DataPoint(Convert.ToDouble(row["TS"]),
+                    DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]));
+                    a.Points.Add(new DataPoint(DateTimeAxis.ToDouble(ts),
                                                Convert.ToDouble(row[string.Format("S{0}", i)])));
                 }
+                Debug.Print(a.Points.Count().ToString());
                 Plot.Series.Add(a);
                 i++;
             }

@@ -36,8 +36,7 @@ namespace DataReducer
         }
 
 
-        const double eps = 1e-7;
-        public static void reduce_MinMax(List<double> px, List<double> py, out long[] result)
+        public static void reduce_MinMax(List<long> px, List<double> py, out long[] result)
         {
             result = new long[px.Count];
             index = 0; len = px.Count;
@@ -49,7 +48,7 @@ namespace DataReducer
             {
                 int i = j++;
                 jumpEntry[i] = new reduce_Entry(i, i, i, i);
-                while(j!=px.Count && (px[j]-px[i]) < eps)
+                while(j!=px.Count && px[j] == px[i])
                 {
                     if (py[jumpEntry[i].maxp] < py[j])
                         jumpEntry[i].maxp = j;
@@ -101,7 +100,7 @@ namespace DataReducer
         /// <param name="px">x좌표 값들</param>
         /// <param name="py">y좌표 값들</param>
         /// <param name="result">결과 bitmask</param>
-        private static reduce_Entry reduce_MinMax_rec(double leftBound, double rightBound, int depth, List<double> px, List<double> py, ref long[] result)
+        private static reduce_Entry reduce_MinMax_rec(long leftBound, long rightBound, int depth, List<long> px, List<double> py, ref long[] result)
         {
             if (jumpTable[index] == px.Count || rightBound < px[jumpTable[index]]) {
                 reduce_Entry ret = jumpEntry[index];
@@ -111,7 +110,7 @@ namespace DataReducer
                 return ret;
             }
             
-            double mid = (leftBound + rightBound) / 2;
+            long mid = leftBound/2 + rightBound/2 + (leftBound%2 + rightBound%2)/2;
             reduce_Entry left = reduce_MinMax_rec(leftBound, mid, depth+1, px, py, ref result);
             reduce_Entry right = reduce_MinMax_rec(mid, rightBound, depth+1, px, py, ref result);
             Debug.Assert(left.begin != -1);

@@ -134,10 +134,6 @@ namespace DataReducer
                 is_time[i] = nameSourceCol[i].isTimestamp;
             }
             currentCSV.open(nameSourceCol.ToArray());
-            for(int i = 0; i < 10; i++)
-            {
-                Debug.Print(currentCSV.rawdata["date_time"][i].ToString());
-            }
             step1_col = Brushes.LightSeaGreen;
 
             processFile_step++;
@@ -146,7 +142,7 @@ namespace DataReducer
             foreach(string s in currentCSV.raw_dataheader)
             {
                 long[] result;
-                Reducer.reduce_MinMax(currentCSV.rawdata[currentCSV.raw_timestamp], currentCSV.rawdata[s], out result);
+                Reducer.reduce_MinMax(currentCSV.rawdata_timestamp, currentCSV.rawdata[s], out result);
                 results.Add(result);
             }
             step2_col = Brushes.LightSeaGreen;
@@ -170,7 +166,7 @@ namespace DataReducer
             {
                 datalist.Add(currentCSV.rawdata[s]);
             }
-            db.insert(tableName, currentCSV.rawdata[currentCSV.raw_timestamp], datalist, results);
+            db.insert(tableName, currentCSV.rawdata_timestamp, datalist, results);
             step3_col = Brushes.LightSeaGreen;
 
             /*

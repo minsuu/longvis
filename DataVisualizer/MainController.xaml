@@ -1,0 +1,31 @@
+﻿<Window x:Class="DataVisualizer.MainController"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:local="clr-namespace:DataVisualizer"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        mc:Ignorable="d"
+        Title="MainController" Height="300" Width="300">
+    <Window.Resources>
+        <Color x:Key="ColorA">#FCFFF5</Color>
+        <Color x:Key="ColorB">#D1DBBD</Color>
+        <Color x:Key="ColorC">#91AA9D</Color>
+        <Color x:Key="ColorD">#3E606F</Color>
+        <Color x:Key="ColorE">#193441</Color>
+        <SolidColorBrush x:Key="TitleBorderBrush" Color="{DynamicResource ColorE}"/>
+        <sys:Double x:Key="sepHeight">20</sys:Double>
+        <sys:Double x:Key="labWidth">150</sys:Double>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+
+    <Border BorderBrush="{DynamicResource TitleBorderBrush}" DockPanel.Dock="Top" x:Name="titlebar" BorderThickness="5">
+        <TextBlock Foreground="Black" HorizontalAlignment="Center">Controller</TextBlock>
+    </Border>       
+</Window>

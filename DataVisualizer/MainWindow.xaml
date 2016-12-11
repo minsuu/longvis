@@ -20,9 +20,6 @@
         <sys:Double x:Key="sepHeight">20</sys:Double>
         <sys:Double x:Key="labWidth">150</sys:Double>
     </Window.Resources>
-    <Window.DataContext>
-        <local:MainViewModel/>
-    </Window.DataContext>
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="{Binding ActualHeight,ElementName=titlebar}" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
@@ -128,7 +125,7 @@
                 </TabControl.Resources>
                 <TabItem Header="tabGraph">
                     <DockPanel>
-                        <oxy:PlotView Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
+                        <oxy:PlotView x:Name="myPlotView"  Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
                         <!--
                         <StatusBar DockPanel.Dock="Bottom">
                             <StatusBarItem>

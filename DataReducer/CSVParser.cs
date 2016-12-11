@@ -15,6 +15,7 @@ namespace DataReducer
         public int raw_len { get; set; }
         public List<string> raw_dataheader { get; set; }
         public string raw_timestamp { get; set; }
+        public List<long> rawdata_timestamp { get; set; } = new List<long>();
         public Dictionary<string, List<double>> rawdata { get; set; } = new Dictionary<string, List<double>>();
 
         public string[] headers { get; set; }
@@ -23,11 +24,14 @@ namespace DataReducer
         public double workProgress { get; set; }
 
         private string path;
+        CsvConfiguration config = new CsvConfiguration(); 
+
         public CSVParser(string path){
+            config.Delimiter = "\t";
             this.path = path;
             using (TextReader textReader = File.OpenText(path))
             {
-                var csv = new CsvReader(textReader);
+                var csv = new CsvReader(textReader, config);
                 csv.Read();
                 headers = csv.FieldHeaders;
             }
@@ -38,7 +42,7 @@ namespace DataReducer
         {
             using (TextReader textReader = File.OpenText(path))
             {
-                var csv = new CsvReader(textReader);
+                var csv = new CsvReader(textReader, config);
                 csv.Read();
 
                 raw_dataheader = new List<string>();
@@ -56,7 +60,6 @@ namespace DataReducer
                 {
                     for(int i = 0; i < namesource.Length; i++)
                     {
-                        double ins = 0;
                         if (namesource[i].isTimestamp)
                         {
                             string time = csv.GetField<string>(namesource[i].oldname);
@@ -64,16 +67,17 @@ namespace DataReducer
                             if(DateTime.TryParse(time, out tmp) ||
                                 DateTime.TryParseExact(time, Env.dateFormats.ToArray(), null, System.Globalization.DateTimeStyles.NoCurrentDateDefault, out tmp))
                             {
-                                ins = (tmp - Epoch).TotalMilliseconds;
+                                long ins = tmp.ToBinary();
+                                rawdata_timestamp.Add(ins);
                             }else
                             {
                                 return false;
                             }
                         }else
                         {
-                            ins = csv.GetField<double>(headers[i]);
+                            double ins = csv.GetField<double>(headers[i]);
+                            rawdata[namesource[i].newname].Add(ins);
                         }
-                        rawdata[namesource[i].newname].Add(ins);
                     }
                     len++;
                 }

@@ -120,7 +120,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainController.xaml.cs">
+      <DependentUpon>MainController.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SizeObserver.cs" />
+    <Page Include="MainController.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

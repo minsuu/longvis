@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Diagnostics;
+using OxyPlot;
 
 namespace DataVisualizer
 {
@@ -10,15 +11,27 @@ namespace DataVisualizer
     public partial class MainWindow : Window
     {
         private MainViewModel mv;
+        private MainController mc;
 
         public MainWindow()
         {
             InitializeComponent();
-            mv = DataContext as MainViewModel;
+            DataContext = mv = MainViewModel.Instance;
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 1));
             TabViewButtonSvg.Opacity = 0.5;
             TabSettingButtonSvg.Opacity = 0.5;
-            TabListButtonSvg.Opacity = 1;           
+            TabListButtonSvg.Opacity = 1;
+
+            var myController = new PlotController();
+            var myZoomWheel = new DelegatePlotCommand<OxyMouseWheelEventArgs>((view, controller, args) => myHandleZoomByWheel(view, args));
+            myController.BindMouseWheel(myZoomWheel);
+            myPlotView.Controller = myController;
+        }
+
+        private static void myHandleZoomByWheel(IPlotView view, OxyMouseWheelEventArgs args, double factor = 1)
+        {
+            var m = new ZoomStepManipulator(view) { Step = args.Delta * 0.001 * factor, FineControl = args.IsControlDown };
+            m.Started(args);
         }
 
         private void PlotView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -66,8 +79,17 @@ namespace DataVisualizer
                 TabViewButtonSvg.Opacity = 1;
                 TabSettingButtonSvg.Opacity = 0.5;
                 TabListButtonSvg.Opacity = 0.5;
+                showMC();
                 Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 0));
             }
+        }
+
+        private void showMC()
+        {
+            mc = new MainController();
+            mc.ShowInTaskbar = false;
+            mc.Owner = Application.Current.MainWindow;
+            mc.Show();
         }
 
         private void TabViewButton_Click(object sender, RoutedEventArgs e)

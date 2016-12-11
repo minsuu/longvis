@@ -81,7 +81,7 @@ namespace DataReducer
         // insertion
         private int ins_iter;
         private int ins_max;
-        public void insert(string name, List<double> T, List<List<double>> S, List<long[]> Q)
+        public void insert(string name, List<long> T, List<List<double>> S, List<long[]> Q)
         {
             using (var conn = create_conn())
             using (var cmd = new MySqlCommand())
