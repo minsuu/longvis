@@ -27,7 +27,7 @@ namespace DataReducer
         CsvConfiguration config = new CsvConfiguration(); 
 
         public CSVParser(string path){
-            config.Delimiter = "\t";
+            config.Delimiter = ",";
             this.path = path;
             using (TextReader textReader = File.OpenText(path))
             {
@@ -67,7 +67,7 @@ namespace DataReducer
                             if(DateTime.TryParse(time, out tmp) ||
                                 DateTime.TryParseExact(time, Env.dateFormats.ToArray(), null, System.Globalization.DateTimeStyles.NoCurrentDateDefault, out tmp))
                             {
-                                long ins = tmp.ToBinary();
+                                long ins = tmp.Ticks;
                                 rawdata_timestamp.Add(ins);
                             }else
                             {

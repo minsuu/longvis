@@ -19,9 +19,12 @@ namespace DataVisualizer
     /// </summary>
     public partial class MainController : Window
     {
+        private MainViewModel mv;
+
         public MainController()
         {
             InitializeComponent();
+            DataContext = mv = MainViewModel.Instance;
         }
     }
 }

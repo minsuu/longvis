@@ -123,6 +123,8 @@
     <Compile Include="MainController.xaml.cs">
       <DependentUpon>MainController.xaml</DependentUpon>
     </Compile>
+    <Compile Include="myPlotCommands.cs" />
+    <Compile Include="myPlotController.cs" />
     <Compile Include="SizeObserver.cs" />
     <Page Include="MainController.xaml">
       <SubType>Designer</SubType>

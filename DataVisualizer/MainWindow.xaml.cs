@@ -22,22 +22,25 @@ namespace DataVisualizer
             TabSettingButtonSvg.Opacity = 0.5;
             TabListButtonSvg.Opacity = 1;
 
-            var myController = new PlotController();
-            var myZoomWheel = new DelegatePlotCommand<OxyMouseWheelEventArgs>((view, controller, args) => myHandleZoomByWheel(view, args));
-            myController.BindMouseWheel(myZoomWheel);
-            myPlotView.Controller = myController;
+            myPlotView.Controller = new myPlotController();
+            myPlotCommands.mw = this;
+            Loaded += delegate
+            {
+                mv.plotWidth = ActualWidth;
+                mv.plotHeight = ActualHeight;               
+            };
         }
-
-        private static void myHandleZoomByWheel(IPlotView view, OxyMouseWheelEventArgs args, double factor = 1)
+        
+        public void onUpdate()
         {
-            var m = new ZoomStepManipulator(view) { Step = args.Delta * 0.001 * factor, FineControl = args.IsControlDown };
-            m.Started(args);
+            mv.need_update = true;
         }
 
-        private void PlotView_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void myPlotView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             FrameworkElement s = sender as FrameworkElement;
-            // mv.Plot_width = (int)s.ActualWidth;
+            mv.plotHeight = s.ActualHeight;
+            mv.plotWidth = s.ActualWidth; 
         }
 
         private void buttonWindowMin_Click(object sender, RoutedEventArgs e)
@@ -75,7 +78,9 @@ namespace DataVisualizer
             if(x != null)
             {
                 char[] delim = {'\n'};
-                mv.fillPlot(x.name, x.sensornames.Split(delim));
+                mv.table = x.name;
+                mv.headers = x.sensornames.Split(delim);
+                mv.createPlot();
                 TabViewButtonSvg.Opacity = 1;
                 TabSettingButtonSvg.Opacity = 0.5;
                 TabListButtonSvg.Opacity = 0.5;
@@ -118,5 +123,6 @@ namespace DataVisualizer
             TabListButtonSvg.Opacity = 0.5;
             Dispatcher.BeginInvoke((Action)(() => mainTabControl.SelectedIndex = 2));
         }
+
     }
 }

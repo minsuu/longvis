@@ -71,6 +71,7 @@ namespace DataVisualizer
             return years <= 1 ? "one year ago" : years + " years ago";
         }
     }
+
     public class tableInfo
     {
         public long id { get; set; }
@@ -108,6 +109,17 @@ namespace DataVisualizer
         public event PropertyChangedEventHandler PropertyChanged;
 
         /* Bound Properties! ! ! */
+        private string _Status;
+        public string Status
+        {
+            get { return _Status; }
+            set
+            {
+                _Status = value;
+                OnPropertyChanged("Status");
+            }
+        }
+
         private string _Logger;
         public string Logger
         {
@@ -133,7 +145,6 @@ namespace DataVisualizer
         
         private DBInterface db = new DBInterface();
         public PlotModel Plot { get; set; } = new PlotModel();
-        public int Plot_width { get; set; } = 0;
 
         public MainViewModel()
         {
@@ -173,9 +184,14 @@ namespace DataVisualizer
                     sensornames = row.Field<string>("sensornames")
                 }));
         }
+
+        public string table { get; set; }
+        public string[] headers { get; set; }
         
-        public void fillPlot(string table, string[] headers)
+        public void createPlot()
         {
+            updTimer?.Stop();
+
             Plot.Series.Clear();
             Plot.Axes.Clear();
 
@@ -186,50 +202,91 @@ namespace DataVisualizer
                 AbsoluteMinimum = DateTimeAxis.ToDouble(DateTime.FromBinary(0))
             });
 
-            OxyPalette myPallete = OxyPalettes.Hot64;
-            int i = 0;
+            int i = 0, sumPoints = 0;
             foreach(string header in headers)
             {
-                LineSeries a = new LineSeries();
+                Debug.Print("{0}", plotWidth);
+                LineSeries a = CacheController.fillPlotFrist(db, table, header, i, plotWidth);
                 a.Color = myPallete.Colors[i];
-                if (i % 2 == 0)
-                    a.StrokeThickness = 5;
-                Plot.Axes.Add(new LinearAxis
-                {
-                    Key = header,
-                    Position = ((i % 2==0)? AxisPosition.Left : AxisPosition.Right),
-                    AxisDistance = (i/2)*30,                    
-                    Angle = 90,
-                    TicklineColor = myPallete.Colors[i],
-                });
-                a.YAxisKey = header;
                 a.Title = header;
-                string s = string.Format("SELECT TS, S{1} FROM {0} WHERE Q{1} <= 2048 ORDER BY TS", table, i);
-                DataTable r = db.getDataTable(s);
-                foreach(var row in r.AsEnumerable())
-                {
-                    DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]));
-                    a.Points.Add(new DataPoint(DateTimeAxis.ToDouble(ts),
-                                               Convert.ToDouble(row[string.Format("S{0}", i)])));
-                }
-                Debug.Print(a.Points.Count().ToString());
+                dataMin = a.Points.First().X;
+                dataMax = a.Points.Last().X;
+                sumPoints += a.Points.Count();
                 Plot.Series.Add(a);
                 i++;
             }
+            sumPoint = sumPoints;
+
+            updTimer = new Timer(500);
+            updTimer.Elapsed += delegate { updatePlot(); };
+            updTimer.Start();
+        }
+
+        OxyPalette myPallete = OxyPalettes.Rainbow(16);
+        double dataMin = 0;
+        double dataMax = 1;
+        Timer updTimer;
+        public bool need_update { get; set; } = false;
+
+        public void updatePlot()
+        {
+            if (!need_update) return;
+            updTimer.Stop();
+            need_update = false;
+            int i = 0, sumPoints = 0;
+            // dataMin -- dataMax :: ???
+            // actualMin -- actualMax :: plotWidth
+            double plotMax = Plot.Axes.First().ActualMaximum;
+            double plotMin = Plot.Axes.First().ActualMinimum;
+            double scale = (dataMax - dataMin) / (plotMax - plotMin);
+
+            foreach(string header in headers)
+            {
+                LineSeries a = Plot.Series[i] as LineSeries;
+                a.Points.Clear();
+                CacheController.fillPlot(db, a, table, header, i, plotWidth, plotMin, plotMax, scale);
+                dataMin = a.Points.First().X;
+                dataMax = a.Points.Last().X;
+                sumPoints += a.Points.Count();
+                i++;
+            }
+            sumPoint = sumPoints;
+
+            Plot.InvalidatePlot(true);
+            updTimer.Start();
+            Debug.Print(Plot.GetLastPlotException()?.ToString());
         }
 
         /*
-        public delegate void d_cache_update();
-        public CacheController cc;
-        public void cache_update()
+        Plot.Axes.Add(new LinearAxis
         {
-            cc.fill_data(cc.data_l, cc.data_r, Plot_width);
-            Plot.Series.Clear();
-            foreach (var a in cc.line)
-                Plot.Series.Add(a);
-            Plot.InvalidatePlot(true);
+            Key = header,
+            Position = ((i % 2==0)? AxisPosition.Left : AxisPosition.Right),
+            AxisDistance = (i/2)*30,                    
+            Angle = 90,
+            TicklineColor = myPallete.Colors[i],
+        });
+        a.YAxisKey = header; */
+
+        int _sumPoint;
+        public int sumPoint {
+            get { return _sumPoint; }
+            set { _sumPoint = value; StatusUpdate(); }
         }
-        */
+        double _plotWidth;
+        public double plotWidth {
+            get { return _plotWidth; }
+            set { _plotWidth = value; StatusUpdate(); }
+        }
+        double _plotHeight;
+        public double plotHeight {
+            get { return _plotHeight; }
+            set { _plotHeight = value; StatusUpdate(); }
+        }
+        void StatusUpdate()
+        {
+            Status = string.Format("Points : {0}, Size : {1} * {2}", sumPoint, plotWidth, plotHeight);
+        } 
 
         /*
         public void Open_clicked(string name)

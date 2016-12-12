@@ -124,8 +124,8 @@
                     </Style>
                 </TabControl.Resources>
                 <TabItem Header="tabGraph">
-                    <DockPanel>
-                        <oxy:PlotView x:Name="myPlotView"  Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="PlotView_SizeChanged"/>
+                    <DockPanel LastChildFill="True">
+                        <oxy:PlotView x:Name="myPlotView"  Model="{Binding Plot}" Grid.Column="1" Margin="0,0,0,0.5" SizeChanged="myPlotView_SizeChanged"/>
                         <!--
                         <StatusBar DockPanel.Dock="Bottom">
                             <StatusBarItem>

@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
-using System.Data.SQLite;
 using System.Timers;
 
 namespace DataReducer
@@ -25,7 +24,6 @@ namespace DataReducer
     public partial class MainWindow : Window
     {
         private MainViewModel mv;
-        private bool onload = false;
 
         private int tab1state = 0; // 0, 1, 2
         private int tab2state = 3; // 3
