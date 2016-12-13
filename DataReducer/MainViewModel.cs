@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows;
 using CsvHelper;
+using System.Timers;
 
 namespace DataReducer
 {
@@ -69,6 +70,16 @@ namespace DataReducer
             }
         }
 
+        private string _step3_pr = "";
+        public string step3_pr {
+            get { return _step3_pr; }
+            set
+            {
+                _step3_pr = value;
+                OnPropertyChanged("step3_pr");
+            }
+        }
+
         private ObservableCollection<nameSource> _nameSourceCol = new ObservableCollection<nameSource>();
         public ObservableCollection<nameSource> nameSourceCol
         {
@@ -110,6 +121,10 @@ namespace DataReducer
         public DBInterface db = new DBInterface();
         public void processFile()
         {
+            step1_col = Brushes.Black;
+            step2_col = Brushes.Black;
+            step3_col = Brushes.Black;
+            step3_pr = "";
             Task<int> task = new Task<int>(processFile_async);
             task.ContinueWith(processFile_Exception, TaskContinuationOptions.OnlyOnFaulted);
             task.Start();
@@ -160,13 +175,25 @@ namespace DataReducer
             query.Append(") ENGINE=MyISAM");
             db.execute(query.ToString());
 
+            Timer a = new Timer(500);
+            a.Elapsed += delegate
+            {
+                step3_pr = db.workProgress.ToString() + "%";
+                Debug.Print(step3_pr);
+            };
+
             // data insert
             List<List<double>> datalist = new List<List<double>>();
             foreach(string s in currentCSV.raw_dataheader)
             {
                 datalist.Add(currentCSV.rawdata[s]);
             }
+
+            a.Start();
             db.insert(tableName, currentCSV.rawdata_timestamp, datalist, results);
+            a.Stop();
+            step3_pr = "100%";
+
             step3_col = Brushes.LightSeaGreen;
 
             /*
@@ -182,6 +209,7 @@ namespace DataReducer
             // check info table exists.. & update info
             if(!db.table_exists(Env.dbBaseName))
                 db.execute(string.Format("CREATE TABLE {0} ({1}) ENGINE=MyISAM", Env.dbBaseName, Env.dbBaseScheme));
+
 
             string nowDate = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
             db.insert(Env.dbBaseName, DBNull.Value, tableName, "default", "min-max", nowDate, nowDate,

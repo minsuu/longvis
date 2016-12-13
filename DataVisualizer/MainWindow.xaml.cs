@@ -11,7 +11,7 @@ namespace DataVisualizer
     public partial class MainWindow : Window
     {
         private MainViewModel mv;
-        private MainController mc;
+        private MainController mc = new MainController();
 
         public MainWindow()
         {
@@ -22,8 +22,7 @@ namespace DataVisualizer
             TabSettingButtonSvg.Opacity = 0.5;
             TabListButtonSvg.Opacity = 1;
 
-            myPlotView.Controller = new myPlotController();
-            myPlotCommands.mw = this;
+            myPlotView.Controller = new PlotController();
             Loaded += delegate
             {
                 mv.plotWidth = ActualWidth;
@@ -91,9 +90,9 @@ namespace DataVisualizer
 
         private void showMC()
         {
-            mc = new MainController();
             mc.ShowInTaskbar = false;
-            mc.Owner = Application.Current.MainWindow;
+            mc.Owner = this;
+            mc.init();
             mc.Show();
         }
 

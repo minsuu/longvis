@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Timers;
 using System.Data;
+using System.Windows.Media;
 
 namespace DataVisualizer
 {
@@ -91,19 +92,26 @@ namespace DataVisualizer
         }
     }
 
+    public class axesInfo
+    {
+        public string name { get; set; }
+        public Brush col { get; set; }
+        public bool IsSelected { get; set; }
+    }
+
     public class MainViewModel : INotifyPropertyChanged
     {
         private static MainViewModel instance;
         public static MainViewModel Instance
         {
-          get 
-          {
-             if (instance == null)
-             {
-                instance = new MainViewModel();
-             }
-             return instance;
-          }
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new MainViewModel();
+                }
+                return instance;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -141,33 +149,56 @@ namespace DataVisualizer
                 OnPropertyChanged("tableInfoList");
             }
         }
+
+        private ObservableCollection<axesInfo> _axesInfoList = new ObservableCollection<axesInfo>();
+        public ObservableCollection<axesInfo> axesInfoList
+        {
+            get { return _axesInfoList; }
+            set
+            {
+                _axesInfoList = value;
+                OnPropertyChanged("axesInfoList");
+            }
+        }
+
         /* ENDED */
-        
+
         private DBInterface db = new DBInterface();
         public PlotModel Plot { get; set; } = new PlotModel();
 
         public MainViewModel()
         {
-            Plot.LegendTitle = "Legend";
+            Plot.LegendTitle = "범례";
+            Plot.LegendBackground = OxyColors.White;
+            Plot.LegendBorder = OxyColors.Black;
+            Plot.LegendBorderThickness = 2;
+            Plot.Updating += delegate { Debug.Print("on Updating"); };
+            Plot.Updated += delegate { Debug.Print("updated!"); };
             try
             {
                 getTableInfo();
-            }catch(Exception e)
+            } catch (Exception e)
             {
                 Debug.Print(e.ToString());
             }
+            string[] pal = { "#4D4D4D", "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0", "#B2912F", "#B276B2", "#DECF3F", "#F15854" };
+            List<OxyColor> poxy = new List<OxyColor>();
+            for(int i=0;i<10;i++)
+                foreach (var p in pal)
+                    poxy.Add(OxyColor.Parse(p));
+            myPallete = new OxyPalette(poxy);
         }
 
-    /*
-        dbBaseScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                           "name VARCHAR(50) NOT NULL UNIQUE, " +
-                           "summary TINYTEXT, " +
-                           "algo TINYTEXT, " +
-                           "created DATETIME, " +
-                           "accessed DATETIME, " +
-                           "sensor TINYINT NOT NULL, " +
-                           "sensornames VARCHAR(255)";
-    */
+        /*
+            dbBaseScheme = "id BIGINT(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                               "name VARCHAR(50) NOT NULL UNIQUE, " +
+                               "summary TINYTEXT, " +
+                               "algo TINYTEXT, " +
+                               "created DATETIME, " +
+                               "accessed DATETIME, " +
+                               "sensor TINYINT NOT NULL, " +
+                               "sensornames VARCHAR(255)";
+        */
         public void getTableInfo()
         {
             tableInfoList.Clear();
@@ -185,9 +216,38 @@ namespace DataVisualizer
                 }));
         }
 
+        public void seriesChanged()
+        {
+            int i = 0;
+            foreach(var a in axesInfoList)
+            {
+                Plot.Series[i].IsVisible = a.IsSelected;
+                i++; 
+            }
+            Plot.InvalidatePlot(false);
+        }
+
         public string table { get; set; }
         public string[] headers { get; set; }
-        
+
+        public bool debugMode { get; set; } = false;
+
+        public void toDebugPlot()
+        {
+            int sumPoints = 0, i=0;
+            foreach(LineSeries a in CacheController.fillPlotDebug(db, table, headers))
+            {
+                Plot.Series.RemoveAt(0);
+                a.Title = headers[i];
+                a.Color = myPallete.Colors[i];
+                Plot.Series.Add(a);
+                sumPoints += a.Points.Count();
+                i++;
+            }
+            sumPoint = sumPoints;
+            Plot.InvalidatePlot(true);
+        }
+
         public void createPlot()
         {
             updTimer?.Stop();
@@ -201,20 +261,41 @@ namespace DataVisualizer
                 Position = AxisPosition.Bottom,
                 AbsoluteMinimum = DateTimeAxis.ToDouble(DateTime.FromBinary(0))
             });
+            Plot.Axes.First().AxisChanged += delegate
+            {
+                need_update = true;
+            };
+            Plot.Axes.Add(new LinearAxis
+            {
+                Key = "default",
+                Position = AxisPosition.Left,
+                Angle = 90
+            });
 
             int i = 0, sumPoints = 0;
-            foreach(string header in headers)
+
+            dataMin = double.MaxValue;
+            dataMax = double.MinValue;
+
+            axesInfoList.Clear();
+            foreach (string header in headers)
             {
                 Debug.Print("{0}", plotWidth);
                 LineSeries a = CacheController.fillPlotFrist(db, table, header, i, plotWidth);
+                axesInfoList.Add(new axesInfo { name = header, col = new SolidColorBrush(fromOxyColor(myPallete.Colors[i])), IsSelected=true});
+
                 a.Color = myPallete.Colors[i];
                 a.Title = header;
-                dataMin = a.Points.First().X;
-                dataMax = a.Points.Last().X;
+                a.YAxisKey = "default";
+                dataMin = Math.Min(dataMin, a.Points.First().X);
+                dataMax = Math.Max(dataMax, a.Points.Last().X);
                 sumPoints += a.Points.Count();
                 Plot.Series.Add(a);
                 i++;
             }
+            Plot.Axes.First().AbsoluteMaximum = dataMax;
+            Plot.Axes.First().AbsoluteMinimum = dataMin;
+
             sumPoint = sumPoints;
 
             updTimer = new Timer(500);
@@ -222,7 +303,12 @@ namespace DataVisualizer
             updTimer.Start();
         }
 
-        OxyPalette myPallete = OxyPalettes.Rainbow(16);
+        Color fromOxyColor(OxyColor c)
+        {
+            return Color.FromRgb(c.R, c.G, c.B);
+        }
+
+        OxyPalette myPallete;
         double dataMin = 0;
         double dataMax = 1;
         Timer updTimer;
@@ -233,40 +319,75 @@ namespace DataVisualizer
             if (!need_update) return;
             updTimer.Stop();
             need_update = false;
-            int i = 0, sumPoints = 0;
-            // dataMin -- dataMax :: ???
-            // actualMin -- actualMax :: plotWidth
-            double plotMax = Plot.Axes.First().ActualMaximum;
-            double plotMin = Plot.Axes.First().ActualMinimum;
-            double scale = (dataMax - dataMin) / (plotMax - plotMin);
-
-            foreach(string header in headers)
+            if (debugMode) return;
+            try
             {
-                LineSeries a = Plot.Series[i] as LineSeries;
-                a.Points.Clear();
-                CacheController.fillPlot(db, a, table, header, i, plotWidth, plotMin, plotMax, scale);
-                dataMin = a.Points.First().X;
-                dataMax = a.Points.Last().X;
-                sumPoints += a.Points.Count();
-                i++;
-            }
-            sumPoint = sumPoints;
+                int i = 0, sumPoints = 0;
+                // dataMin -- dataMax :: ???
+                // actualMin -- actualMax :: plotWidth
+                double plotMax = Plot.Axes.First().ActualMaximum;
+                double plotMin = Plot.Axes.First().ActualMinimum;
+                double scale = (dataMax - dataMin) / (plotMax - plotMin);
 
-            Plot.InvalidatePlot(true);
+                foreach (string header in headers)
+                {
+                    LineSeries a = Plot.Series[i] as LineSeries;
+                    a.Points.Clear();
+                    CacheController.fillPlot(db, a, table, header, i, plotWidth, plotMin, plotMax, scale);
+                    dataMin = a.Points.First().X;
+                    dataMax = a.Points.Last().X;
+                    sumPoints += a.Points.Count();
+                    i++;
+                }
+                sumPoint = sumPoints;
+                Plot.InvalidatePlot(true);
+            }catch(Exception e)
+            {
+                Debug.Print(e.Message);
+                need_update = true;
+            }
             updTimer.Start();
-            Debug.Print(Plot.GetLastPlotException()?.ToString());
         }
 
-        /*
-        Plot.Axes.Add(new LinearAxis
+        public void toOneAxis()
         {
-            Key = header,
-            Position = ((i % 2==0)? AxisPosition.Left : AxisPosition.Right),
-            AxisDistance = (i/2)*30,                    
-            Angle = 90,
-            TicklineColor = myPallete.Colors[i],
-        });
-        a.YAxisKey = header; */
+            Plot.Axes.Add(new LinearAxis
+            {
+                Key = "default",
+                Position = AxisPosition.Left,
+                Angle = 90
+            });
+            int i = 1;
+            foreach(var series in Plot.Series)
+            {
+                LineSeries a = series as LineSeries;
+                a.YAxisKey = "default";
+                Plot.Axes.RemoveAt(1);
+                i++;
+            }
+            Plot.InvalidatePlot(false);
+        }
+
+        public void toEachAxis()
+        {
+            int i = 0;
+            foreach(var series in Plot.Series)
+            {
+                LineSeries a = series as LineSeries;
+                Plot.Axes.Add(new LinearAxis
+                {
+                    Key = a.Title + "Y",
+                    Position = ((i % 2==0)? AxisPosition.Left : AxisPosition.Right),
+                    AxisDistance = (i/2)*30,                    
+                    Angle = 90,
+                    TicklineColor = a.Color,
+                });
+                a.YAxisKey = a.Title + "Y";
+                i++;
+            }
+            Plot.Axes.RemoveAt(1);
+            Plot.InvalidatePlot(false);
+        }
 
         int _sumPoint;
         public int sumPoint {

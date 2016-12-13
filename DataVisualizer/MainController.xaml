@@ -28,9 +28,25 @@
 
     <Border BorderBrush="{DynamicResource TitleBorderBrush}" DockPanel.Dock="Top" x:Name="titlebar" BorderThickness="5">
         <StackPanel>
-            <TextBlock Margin="30" Text="{Binding Status}" TextAlignment="Center" FontSize="15"/>
-            <Button x:Name="debugButton" Margin="30,10,30,0" Height="30">Debug Mode(with Caution!)</Button>
-            <Button x:Name="oneButton" Margin="30,10,30,0" Height="30">One-Axis Mode</Button>
+            <TextBlock Margin="0,15,0,0" Text="{Binding Status}" TextAlignment="Center" FontSize="15"/>
+
+            <ListView SelectionChanged="listview_SelectionChanged" x:Name="listview" SelectionMode="Multiple" Height="130" ItemsSource="{Binding axesInfoList}" WindowChrome.IsHitTestVisibleInChrome="True">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>           
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <WrapPanel Orientation="Horizontal">
+                            <Rectangle Fill="{Binding col}" Width="8" Height="8" Margin="10,0,10,0"/>
+                            <TextBlock Text="{Binding name}"/>
+                        </WrapPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>               
+            </ListView>
+            <Button x:Name="debugButton" Margin="30,10,30,0" WindowChrome.IsHitTestVisibleInChrome="True" Click="debugButton_Click" Height="30">Enable Debug Mode</Button>
+            <Button x:Name="oneButton" Margin="30,10,30,0" WindowChrome.IsHitTestVisibleInChrome="True" Click="oneButton_Click" Height="30">Enable One-Axis Mode</Button>
         </StackPanel>
     </Border>       
 </Window>

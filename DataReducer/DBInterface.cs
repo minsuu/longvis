@@ -14,10 +14,10 @@ namespace DataReducer
     public class DBInterface
     {
         // woking progress. 0~100.
-        public double workProgress {
+        public int workProgress {
             get
             {
-                return (double) ins_iter / ins_max * 100;
+                return ins_iter * 100 / ins_max;
             }
         }
 
@@ -83,27 +83,46 @@ namespace DataReducer
         private int ins_max;
         public void insert(string name, List<long> T, List<List<double>> S, List<long[]> Q)
         {
-            using (var conn = create_conn())
-            using (var cmd = new MySqlCommand())
+            try
             {
-                if (conn == null) return; 
-                cmd.Connection = conn;
-                ins_max = T.Count;
-                
-                using (var trans = conn.BeginTransaction())
+                using (var conn = create_conn())
+                using (var cmd = new MySqlCommand())
                 {
+                    if (conn == null) return;
+                    cmd.Connection = conn;
+                    ins_max = T.Count;
+
+                    cmd.CommandText = string.Format("LOCK TABLE `{0}` WRITE", name);
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = string.Format("ALTER TABLE `{0}` DISABLE KEYS", name);
+                    cmd.ExecuteNonQuery();
+                    string qq = string.Format("INSERT INTO `{0}` VALUES ", name);
+                    List<string> batch = new List<string>();
                     for (ins_iter = 0; ins_iter < ins_max; ins_iter++)
                     {
-                        StringBuilder qq = new StringBuilder(string.Format("INSERT INTO `{0}` VALUES (NULL, {1}, ", name, T[ins_iter]));
-                        for(int i=0; i<S.Count; i++)
-                            qq.AppendFormat("{0:0.#####}, {1}, ", S[i][ins_iter], Q[i][ins_iter]);
-                        qq.Remove(qq.Length - 2, 2);
-                        qq.Append(")");
-                        cmd.CommandText = qq.ToString();
-                        execute(cmd);
+                        StringBuilder each = new StringBuilder(string.Format("(NULL, {0}, ", T[ins_iter]/TimeSpan.TicksPerMillisecond));
+                        for (int i = 0; i < S.Count; i++)
+                            each.AppendFormat("{0:0.#####}, {1}, ", S[i][ins_iter], Q[i][ins_iter]);
+                        each.Remove(each.Length - 2, 2);
+                        each.Append(")");
+                        batch.Add(each.ToString());
+
+                        if (ins_iter == ins_max - 1 || ins_iter % 10000 == 9999)
+                        {
+                            string s = qq + string.Join(",", batch);
+                            cmd.CommandText = s;
+                            cmd.ExecuteNonQuery();
+                            batch.Clear();
+                        }
                     }
-                    trans.Commit();
+                    cmd.CommandText = string.Format("ALTER TABLE `{0}` ENABLE KEYS", name);
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = string.Format("UNLOCK TABLES");
+                    cmd.ExecuteNonQuery();
                 }
+            }catch(Exception e)
+            {
+                Debug.Print(e.Message);
             }
         }
 

@@ -9,32 +9,12 @@ namespace DataReducer
 {
     public static class Reducer
     {
-        static double calcDb(double dx, double dy, double dtx, double dty, double r)
-        {
-            return (dtx == 0) ? dx : (dy * dtx - dx * dty) / r;
-        }
-
-        static double calcRb(double dx, double dy, double dtx, double dty, double r, double Db)
-        {
-            return (dtx == 0) ? dy * dty / Math.Abs(dtx) : (Db * dty + dx * r) / dtx;
-        }
-
-        static double getAreaOfTriangle(double ax, double ay, double bx, double by, double cx, double cy)
-        {
-            return Math.Abs(ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) / 2;
-        }
-
-        static List<int> reduce_RnW(ref List<double> px, ref List<double> py, double[] tolerance)
-        {
-            return null;
-        }
-
-        static List<int> reduce_VnW(ref List<double> px, ref List<double> py, int[] threshold)
-        {
-            return null;
-        }
-
-
+        /// <summary>
+        /// MinMax로 reduction을 수행하는 부분. timestamp가 같은 경우의 처리를 하고 recursion을 수행한다.
+        /// </summary>
+        /// <param name="px"></param>
+        /// <param name="py"></param>
+        /// <param name="result"></param>
         public static void reduce_MinMax(List<long> px, List<double> py, out long[] result)
         {
             result = new long[px.Count];
@@ -76,6 +56,9 @@ namespace DataReducer
             }
         }
 
+        /// <summary>
+        /// reduce된 결과를 담는 entry이다. 시작, 끝, 최대, 최소점의 위치를 담고있다.
+        /// </summary>
         private struct reduce_Entry
         {
             public int begin, end, maxp, minp;
@@ -101,6 +84,7 @@ namespace DataReducer
         /// <param name="result">결과 bitmask</param>
         private static reduce_Entry reduce_MinMax_rec(long leftBound, long rightBound, int depth, List<long> px, List<double> py, ref long[] result)
         {
+            // atomic한 case로, 해당 범위 안에 있는 data가 단 하나일 경우이다.
             if (jumpTable[index] == px.Count || rightBound < px[jumpTable[index]]) {
                 reduce_Entry ret = jumpEntry[index];
                 for(int i=index;i<jumpTable[index];i++)
@@ -109,51 +93,20 @@ namespace DataReducer
                 return ret;
             }
             
+            // 범위를 반으로 나눠, 왼쪽과 오른쪽의 entry를 각각 먼저 구해둔다.
             long mid = leftBound/2 + rightBound/2 + (leftBound%2 + rightBound%2)/2;
             reduce_Entry left = reduce_MinMax_rec(leftBound, mid, depth+1, px, py, ref result);
             reduce_Entry right = reduce_MinMax_rec(mid, rightBound, depth+1, px, py, ref result);
-            Debug.Assert(left.begin != -1);
-            Debug.Assert(right.begin != -1);
 
+            // 네 가지 경우 각각 중요도가 높은 대상에 대해 더 낮은 Q값을 할당해준다.
+            int maxp = (py[left.maxp] < py[right.maxp]) ? right.maxp : left.maxp;
+            int minp = (py[left.minp] < py[right.minp]) ? left.minp : right.minp;
             result[left.begin] = 1 << depth;
             result[right.end] = 1 << depth;
-            bool maxb = py[left.maxp] < py[right.maxp];
-            bool minb = py[left.minp] < py[right.minp];
-            result[maxb ? left.maxp : right.maxp] = 1 << depth;
-            result[minb ? right.minp : left.minp] = 1 << depth;
-            return new reduce_Entry(left.begin, right.end, maxb ? right.maxp : left.maxp, minb ? left.minp : right.minp);
+            result[maxp] = 1 << depth;
+            result[minp] = 1 << depth;
+
+            return new reduce_Entry(left.begin, right.end, maxp, minp);
         }
-
-        //public static List<DataPoint> getStripData(int type = 1, double d = 1, double ef = 1, double threshold = 0)
-        //{
-        //    int c, n;
-        //    Stopwatch sw = new Stopwatch();
-        //    List<DataPoint> qList, pList, rList = null;
-
-        //    readData(out pList, DATA_PATH + FILE_NAME);
-        //    c = pList.First().Count();
-        //    n = pList.Count();
-
-        //    // Hybrid
-        //    Console.WriteLine();
-        //    Console.WriteLine("Start Benchmark for Hybrid Algorithm for d={0} and EF={1}", d, ef);
-
-        //    for (int i = 0; i < c; i++)
-        //    {
-        //        qList = null;
-        //        Console.WriteLine("  Striping {0}-th sensor data...", i + 1);
-
-        //        sw.Reset();
-        //        sw.Start();
-        //        stripVnW(ref pList, out qList, i, 0);
-        //        stripESA(ref qList, out rList, i, d, ef);
-        //        sw.Stop();
-
-        //        Console.WriteLine("    Reduced Rate: {0} / {1} ({2:00.000} %)", rList.Count(), pList.Count(), (double)rList.Count() * 100 / (double)n);
-        //        Console.WriteLine("    Elapsed Time: {0}", sw.Elapsed);
-        //    }
-
-        //    return pList;
-        //}
     }
 }

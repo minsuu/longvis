@@ -232,11 +232,14 @@
                             </Button>
                         </DockPanel>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Label x:Name="labelStage1" Foreground="{Binding Path=step1_col}">Loading CSV files...</Label>
+                            <TextBlock x:Name="labelStage1" Foreground="{Binding Path=step1_col}">Loading CSV files...</TextBlock>
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}"/>
-                            <Label x:Name="labelStage2" Foreground="{Binding Path=step2_col}">Processing data reduction...</Label>
+                            <TextBlock x:Name="labelStage2" Foreground="{Binding Path=step2_col}">Processing data reduction...</TextBlock>
                             <Separator Opacity="0" Height="{DynamicResource sepHeight}"/>
-                            <Label x:Name="labelStage3" Foreground="{Binding Path=step3_col}">Creating table and inserting data...</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="labelStage3" Foreground="{Binding Path=step3_col}">Creating table and inserting data...</TextBlock>
+                                <TextBlock Margin="10,0,0,0" Width="60" Text="{Binding step3_pr}"/>
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </TabItem>

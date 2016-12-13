@@ -13,18 +13,9 @@ namespace DataVisualizer
 {
     public class DBInterface
     {
-        // woking progress. 0~100.
-        public double workProgress {
-            get
-            {
-                return (double) ins_iter / ins_max * 100;
-            }
-        }
-
         // constructor
         public DBInterface()
         {
-            ins_iter = 0; ins_max = 1;
         }
         
         private MySqlConnection create_conn() {
@@ -79,39 +70,13 @@ namespace DataVisualizer
             }
         }
 
-        // insertion
-        private int ins_iter;
-        private int ins_max;
-        public void insert(string name, List<double> T, List<List<double>> S, List<long[]> Q)
-        {
-            using (var conn = create_conn())
-            using (var cmd = new MySqlCommand())
-            {
-                if (conn == null) return; 
-                cmd.Connection = conn;
-                ins_max = T.Count;
-                
-                using (var trans = conn.BeginTransaction())
-                {
-                    for (ins_iter = 0; ins_iter < ins_max; ins_iter++)
-                    {
-                        StringBuilder qq = new StringBuilder(string.Format("INSERT INTO `{0}` VALUES (NULL, {1}, ", name, T[ins_iter]));
-                        for(int i=0; i<S.Count; i++)
-                            qq.AppendFormat("{0:0.#####}, {1}, ", S[i][ins_iter], Q[i][ins_iter]);
-                        qq.Remove(qq.Length - 2, 2);
-                        qq.Append(")");
-                        cmd.CommandText = qq.ToString();
-                        execute(cmd);
-                    }
-                    trans.Commit();
-                }
-            }
-        }
-
-        // retrieving data
+        /// <summary>
+        /// 쿼리 q에 맞는 DataTable을 가져온다
+        /// </summary>
+        /// <param name="q">쿼리문</param>
+        /// <returns></returns>
         public DataTable getDataTable(string q)
         {
-            Debug.Print("execute calleD!!");
             DataTable dt = new DataTable();
             using (var conn = create_conn())
             using (MySqlCommand c = new MySqlCommand(q, conn))
@@ -124,41 +89,16 @@ namespace DataVisualizer
             }
         }
 
-        public void insert(string tableName, params object[] list)
-        {
-            using (var conn = create_conn())
-            using (var comm = conn?.CreateCommand())
-            {
-                if (conn == null) return;
-                StringBuilder query = new StringBuilder(string.Format(@"INSERT INTO `{0}` VALUES (", tableName));
-                for (int i = 0; i < list.Length; i++)
-                {
-                    query.AppendFormat(@"@V{0}, ", i);
-                }
-                query.Remove(query.Length - 2, 2);
-                query.Append(")");
-                comm.CommandText = query.ToString();
-
-                for (int i = 0; i < list.Length; i++)
-                {
-                    comm.Parameters.AddWithValue(string.Format(@"@V{0}", i), list[i]);
-                }
-                Debug.Print(comm.CommandText);
-                execute(comm);
-            }
-        }
-        // general execution function
-        public void execute(MySqlCommand comm)
-        {
-            comm.ExecuteNonQuery();
-        }
-
+        /// <summary>
+        /// 쿼리 q를 수행한다.
+        /// </summary>
+        /// <param name="q"></param>
         public void execute(string q)
         {
             using(var conn = create_conn()) {
                 if (conn == null) return;
                 MySqlCommand comm = new MySqlCommand(q, conn);
-                execute(comm);
+                comm.ExecuteNonQuery();
             }
         }
     }
