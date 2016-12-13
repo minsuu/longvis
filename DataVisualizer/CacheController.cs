@@ -55,7 +55,7 @@ namespace DataVisualizer
         {
             long r = 1;
             while (r < x) r *= 2;
-            return r; 
+            return r * 2; 
         }
 
         /// <summary>
