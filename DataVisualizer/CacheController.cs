@@ -75,7 +75,7 @@ namespace DataVisualizer
             DataTable r = db.getDataTable(s);
             foreach(var row in r.AsEnumerable())
             {
-                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]) * TimeSpan.TicksPerMillisecond);
+                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]));
                 a.Points.Add(new DataPoint(DateTimeAxis.ToDouble(ts),
                                            Convert.ToDouble(row[string.Format("S{0}", i)])));
             }
@@ -96,8 +96,8 @@ namespace DataVisualizer
         /// <param name="scale"></param>
         public static void fillPlot(DBInterface db, LineSeries a, string table, string header, int i, double plotWidth, double plotMin, double plotMax, double scale)
         {
-            long plotMinQ = DateTimeAxis.ToDateTime(plotMin).Ticks / TimeSpan.TicksPerMillisecond;
-            long plotMaxQ = DateTimeAxis.ToDateTime(plotMax).Ticks / TimeSpan.TicksPerMillisecond;
+            long plotMinQ = DateTimeAxis.ToDateTime(plotMin).Ticks;
+            long plotMaxQ = DateTimeAxis.ToDateTime(plotMax).Ticks;
             long plotRange = plotMaxQ - plotMinQ;
             plotMinQ -= plotRange / 2;
             plotMaxQ += plotRange / 2;
@@ -107,7 +107,7 @@ namespace DataVisualizer
             DataTable r = db.getDataTable(s);
             foreach(var row in r.AsEnumerable())
             {
-                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]) * TimeSpan.TicksPerMillisecond);
+                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]));
                 a.Points.Add(new DataPoint(DateTimeAxis.ToDouble(ts),
                                            Convert.ToDouble(row[string.Format("S{0}", i)])));
             }
