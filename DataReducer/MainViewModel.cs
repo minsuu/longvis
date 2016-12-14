@@ -158,6 +158,10 @@ namespace DataReducer
             {
                 long[] result;
                 Reducer.reduce_MinMax(currentCSV.rawdata_timestamp, currentCSV.rawdata[s], out result);
+                int c = 0;
+                foreach(long i in result)
+                    if (i == 0) c++;
+                Debug.Print(c.ToString());
                 results.Add(result);
             }
             step2_col = Brushes.LightSeaGreen;

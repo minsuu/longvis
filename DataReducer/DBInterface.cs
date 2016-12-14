@@ -100,7 +100,7 @@ namespace DataReducer
                     List<string> batch = new List<string>();
                     for (ins_iter = 0; ins_iter < ins_max; ins_iter++)
                     {
-                        StringBuilder each = new StringBuilder(string.Format("(NULL, {0}, ", T[ins_iter]/TimeSpan.TicksPerMillisecond));
+                        StringBuilder each = new StringBuilder(string.Format("(NULL, {0}, ", T[ins_iter]));
                         for (int i = 0; i < S.Count; i++)
                             each.AppendFormat("{0:0.#####}, {1}, ", S[i][ins_iter], Q[i][ins_iter]);
                         each.Remove(each.Length - 2, 2);

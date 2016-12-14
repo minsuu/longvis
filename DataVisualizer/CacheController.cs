@@ -38,7 +38,7 @@ namespace DataVisualizer
 
             foreach(var row in r.AsEnumerable())
             {
-                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]) * TimeSpan.TicksPerMillisecond);
+                DateTime ts = DateTime.FromBinary(Convert.ToInt64(row["TS"]));
                 for(int i=0; i<headers.Length;i++)
                     ret[i].Points.Add(new DataPoint(DateTimeAxis.ToDouble(ts),
                                            Convert.ToDouble(row[string.Format("S{0}", i)])));
@@ -55,7 +55,7 @@ namespace DataVisualizer
         {
             long r = 1;
             while (r < x) r *= 2;
-            return r * 2; 
+            return r * 2;
         }
 
         /// <summary>

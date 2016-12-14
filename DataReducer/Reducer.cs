@@ -19,33 +19,7 @@ namespace DataReducer
         {
             result = new long[px.Count];
             index = 0; len = px.Count;
-
-            // for duplicated timestamp...
-            jumpTable = new int[px.Count];
-            jumpEntry = new reduce_Entry[px.Count];
-            for(int j = 0; j < px.Count;)
-            {
-                int i = j++;
-                jumpEntry[i] = new reduce_Entry(i, i, i, i);
-                while(j!=px.Count && px[j] == px[i])
-                {
-                    if (py[jumpEntry[i].maxp] < py[j])
-                        jumpEntry[i].maxp = j;
-                    if (py[jumpEntry[i].minp] > py[j])
-                        jumpEntry[i].minp = j;
-                    j++;
-                }
-                jumpEntry[i].end = j-1;
-                jumpTable[i] = j;
-            }
-
-            try
-            {
-                reduce_MinMax_rec(px.First(), px.Last(), 0, px, py, ref result);
-            }catch(Exception e)
-            {
-                Debug.Print(e.ToString());
-            }
+            reduce_MinMax_rec(px.First(), px.Last()+1, 0, px, py, ref result);
         }
         
         // woking progress. 0~100.
@@ -70,8 +44,6 @@ namespace DataReducer
         private static reduce_Entry reduce_EntryNull = new reduce_Entry(-1,-1,-1,-1);
         private static int index;
         private static int len;
-        private static int[] jumpTable;
-        private static reduce_Entry[] jumpEntry;
 
         /// <summary>
         ///     [leftBound, rightBound]의 구간에서 index로부터 출발해서 result에다 값을 할당한다
@@ -85,11 +57,10 @@ namespace DataReducer
         private static reduce_Entry reduce_MinMax_rec(long leftBound, long rightBound, int depth, List<long> px, List<double> py, ref long[] result)
         {
             // atomic한 case로, 해당 범위 안에 있는 data가 단 하나일 경우이다.
-            if (jumpTable[index] == px.Count || rightBound < px[jumpTable[index]]) {
-                reduce_Entry ret = jumpEntry[index];
-                for(int i=index;i<jumpTable[index];i++)
-                    result[i] = 1 << depth;
-                index = jumpTable[index];
+            if (index+1 == px.Count || rightBound <= px[index+1]) {
+                result[index] = 1 << depth;
+                reduce_Entry ret = new reduce_Entry(index,index,index,index);
+                index++;
                 return ret;
             }
             

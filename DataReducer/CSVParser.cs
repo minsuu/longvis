@@ -27,7 +27,7 @@ namespace DataReducer
         CsvConfiguration config = new CsvConfiguration(); 
 
         public CSVParser(string path){
-            config.Delimiter = ",";
+            config.Delimiter = ";";
             this.path = path;
             using (TextReader textReader = File.OpenText(path))
             {
