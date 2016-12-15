@@ -234,9 +234,11 @@ namespace DataVisualizer
 
         public void toDebugPlot()
         {
+            st.Restart();
             int sumPoints = 0, i=0;
             foreach(LineSeries a in CacheController.fillPlotDebug(db, table, headers))
             {
+                a.IsVisible = Plot.Series[0].IsVisible;  
                 Plot.Series.RemoveAt(0);
                 a.Title = headers[i];
                 a.Color = myPallete.Colors[i];
@@ -246,10 +248,16 @@ namespace DataVisualizer
             }
             sumPoint = sumPoints;
             Plot.InvalidatePlot(true);
+            st.Stop();
+            Debug.Print("{0}", st.ElapsedMilliseconds / 1000.0);
         }
+
+        Stopwatch st = new Stopwatch();
 
         public void createPlot()
         {
+            st.Restart();
+
             updTimer?.Stop();
 
             Plot.Series.Clear();
@@ -301,6 +309,9 @@ namespace DataVisualizer
             updTimer = new Timer(500);
             updTimer.Elapsed += delegate { updatePlot(); };
             updTimer.Start();
+
+            st.Stop();
+            Debug.Print("{0}", st.ElapsedMilliseconds / 1000.0);
         }
 
         Color fromOxyColor(OxyColor c)
